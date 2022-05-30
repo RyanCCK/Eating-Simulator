@@ -50,21 +50,22 @@ public class TerrainDecay : MonoBehaviour
             {
             case DecayStates.initial:
                 {
-                    GetComponent<MeshRenderer>().material = warningMaterial;
                     state = DecayStates.warning;
+                    GetComponent<MeshRenderer>().material = warningMaterial;
                     break;
                 }
             case DecayStates.warning:
                 {
-                    GetComponent<MeshRenderer>().material = finalMaterial;
                     state = DecayStates.final;
+                    GetComponent<MeshRenderer>().material = finalMaterial;
                     break;
                 }
             case DecayStates.final:
                 {
+                    state = DecayStates.destroy;
                     gameObject.AddComponent(typeof(Rigidbody));
                     Destroy(GetComponent<Collider>());
-                    state = DecayStates.destroy;
+                    Destroy(transform.GetChild(0).gameObject);
                     break;
                 }
             case DecayStates.destroy:

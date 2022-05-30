@@ -108,7 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43f408f1b4844404188b06a823911ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 5
-  jumpForce: 5
-  jump: {x: 0, y: 0, z: 0}
+  moveSpeed: 5
+  jumpForce: 107.93
   isGrounded: 0

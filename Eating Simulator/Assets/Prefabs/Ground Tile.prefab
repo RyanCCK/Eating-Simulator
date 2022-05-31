@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 5657741123996817954}
   - component: {fileID: 7756059684068338284}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Ground Plane
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139,8 +139,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2811201558550886808}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.51, z: 0}
-  m_LocalScale: {x: 0.9, y: 0, z: 0.9}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.95, y: 0, z: 0.95}
   m_Children: []
   m_Father: {fileID: 239935000221110555}
   m_RootOrder: 0

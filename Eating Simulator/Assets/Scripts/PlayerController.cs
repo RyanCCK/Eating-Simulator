@@ -8,11 +8,13 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] public float moveSpeed = 5f;
-    [SerializeField] public float maxSpeed = 8f;
-    [SerializeField] public float jumpForce = 3.5f;
+    [SerializeField] public float moveSpeed = 20f;
+    [SerializeField] public float maxSpeed = 4f;
+    [SerializeField] public float jumpForce = 200f;
+    [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
     public bool isGrounded;
     Rigidbody rb;
+
 
     // Start is called before the first frame update
     void Start()
@@ -20,22 +22,25 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
+
     // Update is called once per frame
     void Update()
+    {
+        
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
+
+
+    void FixedUpdate()
     {
         PlayerMovement();
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "Ground")
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-    }
-
-    void FixedUpdate()
-    {
-        
-    }
 
     void OnCollisionStay(Collision other)
     {
@@ -44,6 +49,7 @@ public class PlayerController : MonoBehaviour
             isGrounded = true;
     }
 
+
     void OnCollisionExit(Collision other)
     {
         // Player is no longer grounded if not colliding with ground
@@ -51,38 +57,53 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
     }
 
+
     /////////////TODO/////////////TODO/////////////TOOD/////////////
-    //TODO: Fix slow fall, sticking to walls, and instant vertical position change when jumping
+    /*
+        TODO: Fix:
+                    - Loss of Velocity on Landing
+                    [FIXED]     - Catching on corners
+                    [FIXED]     - Inconsistent Jump Height
+                    [FIXED]     - Sticking to Corners & Walls
+                    [FIXED]     - Infinite Wall Jump
+    */
     /////////////TODO/////////////TODO/////////////TOOD/////////////
+
 
     // Handles player movement based on player input
     void PlayerMovement()
     {
         float xForce = Input.GetAxis("Horizontal") * moveSpeed;
         float zForce = Input.GetAxis("Vertical") * moveSpeed;
-        float yForce = isGrounded ? Input.GetAxis("Jump") * jumpForce: 0;
+        float yForce = isGrounded ? Input.GetAxis("Jump") * jumpForce: 0f;
+
+        //Add damping to changes in direction made while mid-air
+        if (!isGrounded)
+        {
+            xForce *= midAirDampingCoeff;
+            zForce *= midAirDampingCoeff;
+        }
 
         //Apply movement force
         rb.AddForce(xForce, yForce, zForce, ForceMode.Force);
 
-        // If not grounded, restrict lateral movement
-        if (!isGrounded)
-        {
-            //rb.AddForce(0f, -2f, 0f);
-        }
+        //If net horizontal velocity exceeds maxSpeed, set it to maxSpeed
+        if (Mathf.Sqrt(Mathf.Pow(rb.velocity.x, 2f) + Mathf.Pow(rb.velocity.z, 2f)) > maxSpeed)
+            ConstrainHorizontalVelocity();
+    }
 
-        //Do not exceed max speed
-        if (Mathf.Abs(rb.velocity.x) > maxSpeed || Mathf.Abs(rb.velocity.z) > maxSpeed)
-        {
-            if (Mathf.Abs(rb.velocity.x) > maxSpeed && rb.velocity.x > 0)
-                rb.velocity = new Vector3(maxSpeed, rb.velocity.y, rb.velocity.z);
-            else if (Mathf.Abs(rb.velocity.x) > maxSpeed && rb.velocity.x < 0)
-                rb.velocity = new Vector3(-maxSpeed, rb.velocity.y, rb.velocity.z);
 
-            if (Mathf.Abs(rb.velocity.z) > maxSpeed && rb.velocity.z > 0)
-                rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, maxSpeed);
-            else if (Mathf.Abs(rb.velocity.z) > maxSpeed && rb.velocity.z < 0)
-                rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, -maxSpeed);
-        }
+    // Reduces x and z components of velocity such that net horizontal velocity equals maxSpeed.
+    // Does not change movement direction.
+    void ConstrainHorizontalVelocity()
+    {
+        Vector3 adjustedVelocity = rb.velocity;
+        adjustedVelocity.y = 0f;
+        float yComp = rb.velocity.y;
+
+        adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, maxSpeed);
+        adjustedVelocity.y = yComp;
+
+        rb.velocity = adjustedVelocity;
     }
 }

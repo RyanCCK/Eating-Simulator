@@ -10,7 +10,13 @@ public class CameraDynamics : MonoBehaviour
     private CinemachineBrain brain;
     private GameManager gameManager;
     private GameObject player;
+
     private float camDistance = 8f;
+    private float xDamping = 1.5f;
+    private float yDamping = 0f;
+    private float zDamping = 1.5f;
+    private bool unlimitedSoft = true;
+    private bool targetMovementEnable = false;
 
 
     private void Awake()
@@ -33,17 +39,30 @@ public class CameraDynamics : MonoBehaviour
         // Set Default Camera Values
         ////////////TODO////////////TODO////////////TODO////////////
         
-        //Set follow target
+        ////////////TODO////////////TODO////////////TODO////////////
+        // FIX INITIAL FRAME BUG
+        // A glitched black frame appears at the moment of creation.
+        // Find a way to fix this.
+        ////////////TODO////////////TODO////////////TODO////////////
+
+        //Set follow and look_at target
         virtualCam.Follow = player.transform;
+        virtualCam.LookAt = player.transform;
         
         //Set body mode to "Framing Transposer"
         virtualCam.TryGetComponent<CinemachineFramingTransposer>(out var frameTrans);
         if (frameTrans is null) virtualCam.AddCinemachineComponent<CinemachineFramingTransposer>();
 
-        //Set camera follow distance
+        //Set all Framing Transposer component values
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = camDistance;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_XDamping = xDamping;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_YDamping = yDamping;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_ZDamping = zDamping;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_UnlimitedSoftZone = unlimitedSoft;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_TargetMovementOnly = targetMovementEnable;
     }
 
+    //TODO: Change to "SetToDefaults" and call from Start (avoid duplicate code)
 
     // Resets all camera values to default values
     public void RestoreToDefaults()
@@ -53,23 +72,34 @@ public class CameraDynamics : MonoBehaviour
         //  to their rightful default values (as determined by inspector-enabled variables)
         ////////////TODO////////////TODO////////////TODO////////////
 
-        //Set body mode to "Framing Transposer" and clear any aim mode
-        virtualCam.TryGetComponent<CinemachineFramingTransposer>(out var frameTrans);
-        if (frameTrans is null) virtualCam.AddCinemachineComponent<CinemachineFramingTransposer>();
+        //Destroy aim component
         virtualCam.DestroyCinemachineComponent<CinemachineComposer>();
 
-        virtualCam.Follow = player.transform;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = camDistance;
-
+        //Set follow and look_at target
         virtualCam.Follow = player.transform;
         virtualCam.LookAt = player.transform;
+
+        //Set body mode to "Framing Transposer"
+        virtualCam.TryGetComponent<CinemachineFramingTransposer>(out var frameTrans);
+        if (frameTrans is null) virtualCam.AddCinemachineComponent<CinemachineFramingTransposer>();
+
+        //Set all Framing Transposer component values
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = camDistance;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_XDamping = xDamping;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_YDamping = yDamping;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_ZDamping = zDamping;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_UnlimitedSoftZone = unlimitedSoft;
+        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_TargetMovementOnly = targetMovementEnable;
     }
 
+
+    ////////////TODO////////////TODO////////////TODO////////////
+    // Smooth out the transition between camera modes.
+    ////////////TODO////////////TODO////////////TODO////////////
 
     // Cause camera translation to stop and begin rotating to watch player fall to their death
     public void DeathView()
     {
-        virtualCam.LookAt = player.transform;
         virtualCam.AddCinemachineComponent<CinemachineComposer>();
         virtualCam.DestroyCinemachineComponent<CinemachineFramingTransposer>();
 

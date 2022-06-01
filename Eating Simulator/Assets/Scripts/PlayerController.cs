@@ -56,19 +56,7 @@ public class PlayerController : MonoBehaviour
         if(other.gameObject.tag == "Ground")
             isGrounded = false;
     }
-
-
-    /////////////TODO/////////////TODO/////////////TOOD/////////////
-    /*
-        TODO: Fix:
-                    - Loss of Velocity on Landing
-                    [FIXED]     - Catching on corners
-                    [FIXED]     - Inconsistent Jump Height
-                    [FIXED]     - Sticking to Corners & Walls
-                    [FIXED]     - Infinite Wall Jump
-    */
-    /////////////TODO/////////////TODO/////////////TOOD/////////////
-
+    
 
     // Handles player movement based on player input
     void PlayerMovement()
@@ -93,13 +81,13 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    // Reduces x and z components of velocity such that net horizontal velocity equals maxSpeed.
+    // Constrains x and z components of velocity such that net horizontal velocity equals maxSpeed.
     // Does not change movement direction.
     void ConstrainHorizontalVelocity()
     {
         Vector3 adjustedVelocity = rb.velocity;
-        adjustedVelocity.y = 0f;
         float yComp = rb.velocity.y;
+        adjustedVelocity.y = 0f;
 
         adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, maxSpeed);
         adjustedVelocity.y = yComp;

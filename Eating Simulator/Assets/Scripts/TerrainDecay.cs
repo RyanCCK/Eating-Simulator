@@ -6,29 +6,28 @@ using UnityEngine;
 public class TerrainDecay : MonoBehaviour
 {
     private bool isDecaying;
-    /////////////TODO/////////////TODO/////////////TOOD/////////////
-    //TODO: Fix these states and the associated switch statement in the Decay loop
-    /////////////TODO/////////////TODO/////////////TOOD/////////////
     private enum DecayStates
     {
         initial,
         warning,
         final,
-        destroy,
+        breaking,
         destroyed
     };
     private DecayStates state;
-    [SerializeField] public float decayDelay = 1.5f;
+    [SerializeField] public float decayDelaySeconds = 1f;
     [SerializeField] public Material initialMaterial;
     [SerializeField] public Material warningMaterial;
     [SerializeField] public Material finalMaterial;
     
+
     // Start is called before the first frame update
     void Start()
     {
         isDecaying = false;
         state = DecayStates.initial;
     }
+
 
     void OnCollisionEnter(Collision other)
     {
@@ -38,12 +37,11 @@ public class TerrainDecay : MonoBehaviour
             StartCoroutine(Decay());
         }
     }
-    /////////////TODO/////////////TODO/////////////TOOD/////////////
-    //TODO: fix this loop to use fewer states and be cleaner
-    /////////////TODO/////////////TODO/////////////TOOD/////////////
+
+
+    // Update the state of the tile at a fixed time interval and apply state-based changes
     IEnumerator Decay()
     {
-        // Update the state of the tile, and modify its appearance
         while (state != DecayStates.destroyed)
         {
             switch (state)
@@ -62,13 +60,13 @@ public class TerrainDecay : MonoBehaviour
                 }
             case DecayStates.final:
                 {
-                    state = DecayStates.destroy;
+                    state = DecayStates.breaking;
                     gameObject.AddComponent(typeof(Rigidbody));
                     Destroy(GetComponent<Collider>());
                     Destroy(transform.GetChild(0).gameObject);
                     break;
                 }
-            case DecayStates.destroy:
+            case DecayStates.breaking:
                 {
                     Destroy(gameObject);
                     state = DecayStates.destroyed;
@@ -76,7 +74,7 @@ public class TerrainDecay : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(decayDelay);
+            yield return new WaitForSeconds(decayDelaySeconds);
         }
     }
 }

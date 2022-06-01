@@ -6307,7 +6307,7 @@ MonoBehaviour:
   m_StreamingVersion: 20170927
   m_Priority: 10
   m_StandbyUpdate: 2
-  m_LookAt: {fileID: 0}
+  m_LookAt: {fileID: 1917809980}
   m_Follow: {fileID: 1917809980}
   m_Lens:
     FieldOfView: 60
@@ -27118,6 +27118,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -27224,6 +27225,18 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cccd885edd2c1b40a223f354aa0beb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &963938991
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35797,6 +35810,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81caa5b2a60474e48a7c3abdb8a3f861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deathScreenTime: 2
 --- !u!4 &1279382989
 Transform:
   m_ObjectHideFlags: 0

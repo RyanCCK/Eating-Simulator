@@ -5,25 +5,20 @@ using UnityEngine;
 
 public class DeathFloor : MonoBehaviour
 {
+    private GameManager gameManager;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameManager = GameManager.Instance;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
-    // Reload scene on death
-    ////////////TODO////////////TODO////////////TODO////////////
-    //  TODO: Replace this with a proper event, and switch gameobject to be a trigger 
-    ////////////TODO////////////TODO////////////TODO////////////
-    private void OnCollisionEnter(Collision collision)
+    // When player passes through death floor, call death event in game manager
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.tag == "Player")
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (other.gameObject.tag == "Player")
+            gameManager.PlayerDeath();
     }
 }

@@ -8,25 +8,36 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] public float moveSpeed = 20f;
+    [SerializeField] public float moveForce = 20f;
     [SerializeField] public float maxSpeed = 4f;
     [SerializeField] public float jumpForce = 200f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
     public bool isGrounded;
-    Rigidbody rb;
+    public bool isDead;
+
+    private Rigidbody rb;
+    private GameManager gameManager;
+
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        isDead = false;
+    }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        gameManager = GameManager.Instance;
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (isDead)
+            OnDeath();
     }
 
 
@@ -38,7 +49,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        PlayerMovement();
+        if(!isDead)
+            PlayerMovement();
     }
 
 
@@ -56,13 +68,17 @@ public class PlayerController : MonoBehaviour
         if(other.gameObject.tag == "Ground")
             isGrounded = false;
     }
-    
 
+
+    ////////////TODO////////////TODO////////////TODO////////////
+    // FIX SUPER JUMP!!!
+    ////////////TODO////////////TODO////////////TODO////////////
+    
     // Handles player movement based on player input
     void PlayerMovement()
     {
-        float xForce = Input.GetAxis("Horizontal") * moveSpeed;
-        float zForce = Input.GetAxis("Vertical") * moveSpeed;
+        float xForce = Input.GetAxis("Horizontal") * moveForce;
+        float zForce = Input.GetAxis("Vertical") * moveForce;
         float yForce = isGrounded ? Input.GetAxis("Jump") * jumpForce: 0f;
 
         //Add damping to changes in direction made while mid-air
@@ -93,5 +109,12 @@ public class PlayerController : MonoBehaviour
         adjustedVelocity.y = yComp;
 
         rb.velocity = adjustedVelocity;
+    }
+
+
+    // Handles what happens to the player on death
+    private void OnDeath()
+    {
+
     }
 }

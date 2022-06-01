@@ -5,6 +5,12 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class TerrainDecay : MonoBehaviour
 {
+    [SerializeField] public float decayDelaySeconds = 1f;
+    [SerializeField] public Material initialMaterial;
+    [SerializeField] public Material warningMaterial;
+    [SerializeField] public Material finalMaterial;
+
+    private GameManager gameManager;
     private bool isDecaying;
     private enum DecayStates
     {
@@ -15,17 +21,19 @@ public class TerrainDecay : MonoBehaviour
         destroyed
     };
     private DecayStates state;
-    [SerializeField] public float decayDelaySeconds = 1f;
-    [SerializeField] public Material initialMaterial;
-    [SerializeField] public Material warningMaterial;
-    [SerializeField] public Material finalMaterial;
-    
+
+
+    private void Awake()
+    {
+        state = DecayStates.initial;
+        isDecaying = false;
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        isDecaying = false;
-        state = DecayStates.initial;
+        gameManager = GameManager.Instance;
     }
 
 

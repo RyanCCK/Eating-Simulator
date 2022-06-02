@@ -24,6 +24,21 @@ public class CameraDynamics : MonoBehaviour
         brain = gameObject.GetComponent<CinemachineBrain>(); 
     }
 
+
+    private void OnEnable()
+    {
+        GameManager.resetAllObjectDefaults += SetToDefaults;
+        GameManager.deathCameraEvent += DeathView;
+    }
+
+
+    private void OnDisable()
+    {
+        GameManager.resetAllObjectDefaults -= SetToDefaults;
+        GameManager.deathCameraEvent -= DeathView;
+    }
+
+
     // Declared as a coroutine to allow initialization of camera values.
     // ActiveVirtualCamera does not work without first waiting for a frame.
     private IEnumerator Start()
@@ -36,50 +51,27 @@ public class CameraDynamics : MonoBehaviour
         virtualCam = brain.ActiveVirtualCamera as CinemachineVirtualCamera;
 
         ////////////TODO////////////TODO////////////TODO////////////
-        // Set Default Camera Values
-        ////////////TODO////////////TODO////////////TODO////////////
-        
-        ////////////TODO////////////TODO////////////TODO////////////
         // FIX INITIAL FRAME BUG
         // A glitched black frame appears at the moment of creation.
         // Find a way to fix this.
         ////////////TODO////////////TODO////////////TODO////////////
 
-        //Set follow and look_at target
-        virtualCam.Follow = player.transform;
-        virtualCam.LookAt = player.transform;
-        
-        //Set body mode to "Framing Transposer"
-        virtualCam.TryGetComponent<CinemachineFramingTransposer>(out var frameTrans);
-        if (frameTrans is null) virtualCam.AddCinemachineComponent<CinemachineFramingTransposer>();
-
-        //Set all Framing Transposer component values
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = camDistance;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_XDamping = xDamping;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_YDamping = yDamping;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_ZDamping = zDamping;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_UnlimitedSoftZone = unlimitedSoft;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_TargetMovementOnly = targetMovementEnable;
+        SetToDefaults();
     }
+    
 
-    //TODO: Change to "SetToDefaults" and call from Start (avoid duplicate code)
-
-    // Resets all camera values to default values
-    public void RestoreToDefaults()
+    // Sets all camera values to default values
+    public void SetToDefaults()
     {
-        ////////////TODO////////////TODO////////////TODO////////////
-        //  Restore any camera values that are modified in any of the member functions herein
-        //  to their rightful default values (as determined by inspector-enabled variables)
-        ////////////TODO////////////TODO////////////TODO////////////
-
-        //Destroy aim component
-        virtualCam.DestroyCinemachineComponent<CinemachineComposer>();
-
         //Set follow and look_at target
         virtualCam.Follow = player.transform;
         virtualCam.LookAt = player.transform;
 
-        //Set body mode to "Framing Transposer"
+        //Destroy Aim component if it exists
+        virtualCam.TryGetComponent<CinemachineComposer>(out var comp);
+        if(comp != null) virtualCam.DestroyCinemachineComponent<CinemachineComposer>();
+
+        //Create Framing Transposer component if it does not yet exist
         virtualCam.TryGetComponent<CinemachineFramingTransposer>(out var frameTrans);
         if (frameTrans is null) virtualCam.AddCinemachineComponent<CinemachineFramingTransposer>();
 
@@ -100,6 +92,7 @@ public class CameraDynamics : MonoBehaviour
     // Cause camera translation to stop and begin rotating to watch player fall to their death
     public void DeathView()
     {
+        //Set body mode to "Framing Transposer" if not already set
         virtualCam.AddCinemachineComponent<CinemachineComposer>();
         virtualCam.DestroyCinemachineComponent<CinemachineFramingTransposer>();
 

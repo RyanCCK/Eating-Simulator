@@ -8,10 +8,22 @@ using Cinemachine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] public float deathScreenTime = 2f;
+    [SerializeField] public float levelLoadTime = 2f;
+
+    public delegate void ResetAllObjectDefaults();
+    public delegate void DeathAction();
+    public delegate void LevelAction();
+    public delegate void DeathCamera();
+
+    public static event ResetAllObjectDefaults resetAllObjectDefaults;
+    public static event DeathAction onDeath;
+    public static event LevelAction onLevelAdvance;
+    public static event DeathCamera deathCameraEvent;
+
+    private int currentSceneIndex = 0;
+    private int nextLevelIndex = 1;
 
     private static GameManager gameManager;
-    private GameObject player;
-    private CameraDynamics cams;
 
 
     public static GameManager Instance
@@ -41,36 +53,49 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        cams = Camera.main.GetComponent<CameraDynamics>();
+
+    }
+
+
+    // Handles progression to the next level
+    public void LoadNextLevel()
+    {
+        onLevelAdvance();
+        StartCoroutine(NextLevelRoutine());
+    }
+
+
+    // Coroutine used for time level transition event
+    private IEnumerator NextLevelRoutine()
+    {
+        yield return new WaitForSeconds(levelLoadTime);
+
+        // Check if a next level exists. If so, load. If not, GAME WON!
+        if (nextLevelIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(nextLevelIndex);
+            ++nextLevelIndex; ++currentSceneIndex;
+        }
+        else Debug.Log("YOU WON THE GAME!");
+
     }
 
 
     // Handles processing of events on player death
     public void PlayerDeath()
     {
-        player.GetComponent<PlayerController>().isDead = true;
+        onDeath();      //Event
         StartCoroutine(DeathRoutine());
     }
 
 
-    // Coroutine for timed death events
+    // Coroutine for timed death event
     private IEnumerator DeathRoutine()
     {
-        ////////////TODO////////////TODO////////////TODO////////////
-        // USE EVENTS
-        ////////////TODO////////////TODO////////////TODO////////////
-        
-        //Issue here is that my GameManager has to save a reference to CameraDynamics script on my main camera gameobject.
-        //  I could, instead, save a reference to the gameobject itself, then use GetComponent<CameraDynamics>.DeathView(),
-        //  but this is basically the same issue, with an adedd step.
-        //I think the best way to handle this would be with events. I could create a delegate for death events (such as camera events and scene loading),
-        //then create an event from this delegate, and subscribe DeathView() to it. Then trigger the event from this script. 
-        //  I should use events for all similarly called methods.
-
-        cams.DeathView();   //Currently does noting
+        deathCameraEvent();     //Event
         yield return new WaitForSeconds(deathScreenTime);
-        cams.RestoreToDefaults();
+        
+        resetAllObjectDefaults();   //Event
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
     public bool isGrounded;
     public bool isDead;
+    public bool isProgressing;
 
     private Rigidbody rb;
     private GameManager gameManager;
@@ -23,6 +24,21 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         isDead = false;
+        isProgressing = false;
+    }
+
+
+    private void OnEnable()
+    {
+        GameManager.onLevelAdvance += OnLevelProgression;
+        GameManager.onDeath += OnDeath;
+    }
+
+
+    private void OnDisable()
+    {
+        GameManager.onLevelAdvance -= OnLevelProgression;
+        GameManager.onDeath -= OnDeath;
     }
 
 
@@ -38,6 +54,8 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead)
             OnDeath();
+        if (isProgressing)
+            OnLevelProgression();
     }
 
 
@@ -49,7 +67,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(!isDead)
+        if(!isDead && !isProgressing)
             PlayerMovement();
     }
 
@@ -115,6 +133,19 @@ public class PlayerController : MonoBehaviour
     // Handles what happens to the player on death
     private void OnDeath()
     {
-
+        isDead = true;
     }
+
+
+    // Handles what happens to the player on level progression
+    private void OnLevelProgression()
+    {
+        isProgressing = true;
+        rb.useGravity = false;
+        rb.constraints = RigidbodyConstraints.FreezePosition;
+    }
+
+    ////////////TODO////////////TODO////////////TODO////////////
+    // Create "Set To Defaults" method
+    ////////////TODO////////////TODO////////////TODO////////////
 }

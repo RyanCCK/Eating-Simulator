@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Script to control the player character
-
 [RequireComponent(typeof(Rigidbody))]
 [DisallowMultipleComponent]
 public class PlayerController : MonoBehaviour
@@ -11,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float moveForce = 20f;
     [SerializeField] public float maxSpeed = 4f;
     [SerializeField] public float jumpForce = 200f;
+    [SerializeField] public float maxJump = 5f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
     public bool isGrounded;
     public bool isDead;
@@ -52,14 +51,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDead)
-            OnDeath();
-        if (isProgressing)
-            OnLevelProgression();
+        
     }
 
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision other)
     {
         
     }
@@ -80,17 +76,15 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    // NOTE: This will NOT be called once the terrain the player is standing on is
+    //       destroyed; this is because the ground tile collider will be destroyed.
     void OnCollisionExit(Collision other)
     {
         // Player is no longer grounded if not colliding with ground
         if(other.gameObject.tag == "Ground")
             isGrounded = false;
     }
-
-
-    ////////////TODO////////////TODO////////////TODO////////////
-    // FIX SUPER JUMP!!!
-    ////////////TODO////////////TODO////////////TODO////////////
+    
     
     // Handles player movement based on player input
     void PlayerMovement()
@@ -98,6 +92,9 @@ public class PlayerController : MonoBehaviour
         float xForce = Input.GetAxis("Horizontal") * moveForce;
         float zForce = Input.GetAxis("Vertical") * moveForce;
         float yForce = isGrounded ? Input.GetAxis("Jump") * jumpForce: 0f;
+
+        //If player jumps, they are no longer grounded
+        if (isGrounded && yForce != 0) isGrounded = false;
 
         //Add damping to changes in direction made while mid-air
         if (!isGrounded)
@@ -112,6 +109,10 @@ public class PlayerController : MonoBehaviour
         //If net horizontal velocity exceeds maxSpeed, set it to maxSpeed
         if (Mathf.Sqrt(Mathf.Pow(rb.velocity.x, 2f) + Mathf.Pow(rb.velocity.z, 2f)) > maxSpeed)
             ConstrainHorizontalVelocity();
+
+        //If vertical velocity exceeds maxJump, set it to maxJump
+        if (rb.velocity.y > maxJump)
+            ConstrainVerticalVelocity();
     }
 
 
@@ -125,6 +126,19 @@ public class PlayerController : MonoBehaviour
 
         adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, maxSpeed);
         adjustedVelocity.y = yComp;
+
+        rb.velocity = adjustedVelocity;
+    }
+
+
+    // Constrains maximum upward vertical velocity to not exceed maxJump
+    void ConstrainVerticalVelocity()
+    {
+        Vector3 adjustedVelocity = rb.velocity;
+        float xComp = rb.velocity.x;
+        float zComp = rb.velocity.z;
+
+        adjustedVelocity.y = maxJump;
 
         rb.velocity = adjustedVelocity;
     }

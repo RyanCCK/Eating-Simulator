@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a24ee9ac0078348b51e7e15cf00830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decayDelaySeconds: 0.25
+  decayDelaySeconds: 1
   initialMaterial: {fileID: 2100000, guid: 20dd911116a48af4bbb093e9998d20b8, type: 2}
   warningMaterial: {fileID: 2100000, guid: 9e1d5fdcd69ac6140b33c541260affc6, type: 2}
   finalMaterial: {fileID: 2100000, guid: e2809ef981967184f9db9c2ca42dc4c7, type: 2}

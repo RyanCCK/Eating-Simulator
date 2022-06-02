@@ -36,17 +36,17 @@ public class GameManager : MonoBehaviour
             return gameManager;
         }
     }
-
-
-    ////////////TODO////////////TODO////////////TODO////////////
-    // FIX DUPLICATION ERROR
-    // Issue where a new GameManager is created every time the scene is loaded
-    ////////////TODO////////////TODO////////////TODO////////////
+    
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-        gameManager = this;
+        if (gameManager is null)
+        {
+            gameManager = this;
+            DontDestroyOnLoad(gameManager);
+        }
+        else if (gameManager != this)
+            Destroy(gameObject);
     }
 
 

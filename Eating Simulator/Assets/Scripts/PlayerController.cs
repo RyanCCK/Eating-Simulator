@@ -111,8 +111,15 @@ public class PlayerController : MonoBehaviour
             ConstrainHorizontalVelocity();
 
         //If vertical velocity exceeds maxJump, set it to maxJump
+        /*
+            ONCE JUMP TILES ARE ADDED, THIS WILL NO LONGER BE ACCEPTABLE
+            SUPERJUMP IS FIXED BY SETTING isGrounded FALSE AFTER JUMPING
+            THIS SHOULD NOT BE NECESSARY TO PREVENT SUPERJUMP
+        */
+        /*
         if (rb.velocity.y > maxJump)
             ConstrainVerticalVelocity();
+        */
     }
 
 

@@ -55,7 +55,7 @@ Material:
     - _Smoothness: 1
     m_Colors:
     - _GridColor: {r: 4.2370934, g: 0, b: 4.2370934, a: 1}
-    - _GridSpeed: {r: 1, g: 3, b: 2, a: 0}
+    - _GridSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _GroundColor: {r: 0.13725486, g: 0, b: 0.24705875, a: 1}
-    - _Tiling: {r: 0.025, g: 0.025, b: 0, a: 0}
+    - _Tiling: {r: 0.24, g: 0.24, b: 0, a: 0}
   m_BuildTextureStacks: []

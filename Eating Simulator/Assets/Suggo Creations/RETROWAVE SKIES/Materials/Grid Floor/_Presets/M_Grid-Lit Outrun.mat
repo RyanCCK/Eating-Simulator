@@ -52,7 +52,7 @@ Material:
     - BOOLEAN_WORLDSPACEUV: 1
     - _GridRotation: 0
     - _Metallic: 0
-    - _Smoothness: 0.98
+    - _Smoothness: 1
     m_Colors:
     - _GridColor: {r: 1.0592737, g: 0.2495671, b: 0.41039923, a: 1}
     - _GridSpeed: {r: 0, g: 0.2, b: 0, a: 0}

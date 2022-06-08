@@ -70,7 +70,7 @@ Material:
     - _AlphaToMaskInspectorValue: 0
     - _BlendMode: 0
     - _CubemapOpacity: 0.2
-    - _CubemapRotation: 0
+    - _CubemapRotation: 180
     - _CullMode: 2
     - _CullModeForward: 2
     - _DepthOffsetEnable: 0

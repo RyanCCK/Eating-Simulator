@@ -56,8 +56,9 @@ public class TerrainDecay : MonoBehaviour
             {
             case DecayStates.initial:
                 {
-                    state = DecayStates.warning;
-                    GetComponent<MeshRenderer>().material = warningMaterial;
+                    //state = DecayStates.warning;
+                    state = DecayStates.breaking;
+                    //GetComponent<MeshRenderer>().material = warningMaterial;
                     break;
                 }
             case DecayStates.warning:

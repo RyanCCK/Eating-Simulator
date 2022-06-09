@@ -5,10 +5,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class TerrainDecay : MonoBehaviour
 {
-    [SerializeField] public float decayDelaySeconds = 1f;
-    [SerializeField] public Material initialMaterial;
-    [SerializeField] public Material warningMaterial;
-    [SerializeField] public Material finalMaterial;
+    [SerializeField] public float decayDelaySeconds = 0.25f;
+    [SerializeField] public float fallingSeconds = 2f;
+    //[SerializeField] public Material initialMaterial;
+    //[SerializeField] public Material warningMaterial;
+    //[SerializeField] public Material finalMaterial;
 
     private GameManager gameManager;
     private bool isDecaying;
@@ -57,16 +58,18 @@ public class TerrainDecay : MonoBehaviour
             case DecayStates.initial:
                 {
                     //state = DecayStates.warning;
-                    state = DecayStates.breaking;
+                    state = DecayStates.final;
                     //GetComponent<MeshRenderer>().material = warningMaterial;
                     break;
                 }
+            /*
             case DecayStates.warning:
                 {
                     state = DecayStates.final;
                     GetComponent<MeshRenderer>().material = finalMaterial;
                     break;
                 }
+            */
             case DecayStates.final:
                 {
                     state = DecayStates.breaking;
@@ -83,7 +86,10 @@ public class TerrainDecay : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(decayDelaySeconds);
+            float delay;
+            if (state == DecayStates.final) delay = decayDelaySeconds;
+            else delay = fallingSeconds;
+            yield return new WaitForSeconds(delay);
         }
     }
 }

@@ -11,10 +11,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float jumpForce = 200f;
     [SerializeField] public float maxJump = 5f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
-    public bool isGrounded;
     public bool isDead;
     public bool isProgressing;
+    public bool isGrounded;
 
+    private bool isSpeedBoostApplied;
     private Rigidbody rb;
     private GameManager gameManager;
 
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         isDead = false;
         isProgressing = false;
+        isSpeedBoostApplied = false;
     }
 
 
@@ -57,7 +59,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        
+        if (other.gameObject.tag == "Speed Boost")
+        {
+            float speedBoostAcceleration = other.gameObject.GetComponent<SpeedBoost>().acceleration;
+            float speedBoostDuration = other.gameObject.GetComponent<SpeedBoost>().duration;
+            StartCoroutine(SpeedBoost(speedBoostAcceleration, speedBoostDuration));
+        }
     }
 
 
@@ -83,6 +90,8 @@ public class PlayerController : MonoBehaviour
         // Player is no longer grounded if not colliding with ground
         if(other.gameObject.tag == "Ground")
             isGrounded = false;
+        //if (other.gameObject.tag == "Speed Boost")
+            //isSpeedBoostApplied = false;
     }
     
     
@@ -106,8 +115,10 @@ public class PlayerController : MonoBehaviour
         //Apply movement force
         rb.AddForce(xForce, yForce, zForce, ForceMode.Force);
 
-        //If net horizontal velocity exceeds maxSpeed, set it to maxSpeed
-        if (Mathf.Sqrt(Mathf.Pow(rb.velocity.x, 2f) + Mathf.Pow(rb.velocity.z, 2f)) > maxSpeed)
+        //If net horizontal velocity exceeds maxSpeed, AND there is no speed boost being applied, 
+        //  clamp to maxSpeed
+        if (Mathf.Sqrt(Mathf.Pow(rb.velocity.x, 2f) + Mathf.Pow(rb.velocity.z, 2f)) > maxSpeed
+            && !isSpeedBoostApplied)
             ConstrainHorizontalVelocity();
 
         //If vertical velocity exceeds maxJump, set it to maxJump
@@ -148,6 +159,16 @@ public class PlayerController : MonoBehaviour
         adjustedVelocity.y = maxJump;
 
         rb.velocity = adjustedVelocity;
+    }
+
+
+    // Handles application of speed boost from speed boost tile
+    private IEnumerator SpeedBoost(float acceleration, float duration)
+    {
+        isSpeedBoostApplied = true;
+        rb.AddForce(0f, 0f, acceleration, ForceMode.Impulse);
+        yield return new WaitForSeconds(duration);
+        isSpeedBoostApplied = false;
     }
 
 

@@ -110,9 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   decayDelaySeconds: 0.25
-  initialMaterial: {fileID: 2100000, guid: 20dd911116a48af4bbb093e9998d20b8, type: 2}
-  warningMaterial: {fileID: 2100000, guid: 9e1d5fdcd69ac6140b33c541260affc6, type: 2}
-  finalMaterial: {fileID: 2100000, guid: e2809ef981967184f9db9c2ca42dc4c7, type: 2}
+  fallingSeconds: 2
 --- !u!1001 &6759140863398760784
 PrefabInstance:
   m_ObjectHideFlags: 0

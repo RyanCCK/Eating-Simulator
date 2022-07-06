@@ -11,13 +11,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float jumpForce = 200f;
     [SerializeField] public float maxJump = 5f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
-    public bool isDead;
-    public bool isProgressing;
-    public bool isGrounded;
 
-    private bool isSpeedBoostApplied;
-    private Rigidbody rb;
     private GameManager gameManager;
+    private Rigidbody rb;
+    private bool isDead;
+    private bool isProgressing;
+    private bool isGrounded;
+    private bool isSpeedBoostApplied;
 
 
     private void Awake()
@@ -47,13 +47,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         gameManager = GameManager.Instance;
-    }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
 
@@ -90,8 +83,6 @@ public class PlayerController : MonoBehaviour
         // Player is no longer grounded if not colliding with ground
         if(other.gameObject.tag == "Ground")
             isGrounded = false;
-        //if (other.gameObject.tag == "Speed Boost")
-            //isSpeedBoostApplied = false;
     }
     
     
@@ -100,7 +91,7 @@ public class PlayerController : MonoBehaviour
     {
         float xForce = Input.GetAxis("Horizontal") * moveForce;
         float zForce = Input.GetAxis("Vertical") * moveForce;
-        float yForce = isGrounded ? Input.GetAxis("Jump") * jumpForce: 0f;
+        float yForce = isGrounded ? Input.GetAxis("Jump") * jumpForce : 0f;
 
         //If player jumps, they are no longer grounded
         if (isGrounded && yForce != 0) isGrounded = false;
@@ -149,6 +140,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    /*
     // Constrains maximum upward vertical velocity to not exceed maxJump
     void ConstrainVerticalVelocity()
     {
@@ -160,6 +152,7 @@ public class PlayerController : MonoBehaviour
 
         rb.velocity = adjustedVelocity;
     }
+    */
 
 
     // Handles application of speed boost from speed boost tile

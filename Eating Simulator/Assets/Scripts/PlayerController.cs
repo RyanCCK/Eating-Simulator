@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float maxSpeed = 4f;
     [SerializeField] public float jumpForce = 200f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
+    [SerializeField] public float gravity;
 
     private GameManager gameManager;
     private Rigidbody rb;
@@ -54,8 +55,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!isDead && !isProgressing && Input.GetAxis("Jump") == 1 && isGrounded)
-            canJump = true;
+        if (!isDead && !isProgressing && isGrounded)
+        {
+            if (Input.GetAxis("Jump") == 1) canJump = true;
+        }
         else canJump = false;
     }
 
@@ -72,6 +75,9 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(IsJumping());
             }
         }
+
+        // Apply custom gravity
+        //rb.AddForce(0f, -1f * gravity, 0f, ForceMode.Acceleration);
     }
 
 
@@ -107,6 +113,7 @@ public class PlayerController : MonoBehaviour
     void PlayerJump()
     {
         rb.AddForce(0f, jumpForce, 0f, ForceMode.Impulse);
+        //Debug.Log("Jump Registered");
         isGrounded = false;
     }
 

@@ -111,8 +111,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveForce: 40
   maxSpeed: 6
-  jumpForce: 350
-  maxJump: 5
+  jumpForce: 7
   midAirDampingCoeff: 0.3
 --- !u!54 &5411283269819092201
 Rigidbody:

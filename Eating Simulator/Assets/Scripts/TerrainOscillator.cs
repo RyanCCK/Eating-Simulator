@@ -10,22 +10,17 @@ public class TerrainOscillator : MonoBehaviour
     [SerializeField] public float yAmp = 1f;
     [SerializeField] public float zSpeed = 0f;
     [SerializeField] public float zAmp = 1f;
-    private Vector3 initialPos;
-    private Vector3 updatedPos;
-
-
-    private void Awake()
-    {
-        initialPos = gameObject.transform.position;
-    }
-
+    private float xTrans = 0f;
+    private float yTrans = 0f;
+    private float zTrans = 0f;
+    
 
     // Update is called once per frame
     void Update()
     {
-        updatedPos.x = initialPos.x + Mathf.Sin(Time.time * xSpeed) * xAmp;
-        updatedPos.y = initialPos.y + Mathf.Sin(Time.time * ySpeed) * yAmp;
-        updatedPos.z = initialPos.z + Mathf.Sin(Time.time * zSpeed) * zAmp;
-        gameObject.transform.position = updatedPos;
+        xTrans = (Mathf.Sin(Time.time * xSpeed) * xAmp) - (Mathf.Sin((Time.time - Time.deltaTime) * xSpeed) * xAmp);
+        yTrans = (Mathf.Sin(Time.time * ySpeed) * yAmp) - (Mathf.Sin((Time.time - Time.deltaTime) * ySpeed) * yAmp);
+        zTrans = (Mathf.Sin(Time.time * zSpeed) * zAmp) - (Mathf.Sin((Time.time - Time.deltaTime) * zSpeed) * zAmp);
+        transform.Translate(xTrans, yTrans, zTrans);
     }
 }

@@ -12,12 +12,12 @@ public class TerrainRotator : MonoBehaviour
 
     private void Awake()
     {
-        //compute actual midpoint of parent object from all child object positions
-        foreach(Transform child in transform)
+        Component[] childTransforms = GetComponentsInChildren<Transform>();
+        foreach(Transform child in childTransforms)
         {
             center += child.position;
         }
-        center /= transform.childCount;
+        center /= childTransforms.Length;
     }
 
 

@@ -10,16 +10,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float maxSpeed = 4f;
     [SerializeField] public float jumpForce = 200f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
-    [SerializeField] public bool jumpEnabled = true;
 
     private GameManager gameManager;
     private Rigidbody rb;
 
     private bool isDead;
     private bool isProgressing;
-    public bool isGrounded;
-    private bool isSpeedBoostApplied;
+    private bool isGrounded;
     private bool canJump;
+    private bool isJumping = false;
+    private bool isSpeedBoostApplied;
 
 
     private void Awake()
@@ -65,8 +65,12 @@ public class PlayerController : MonoBehaviour
         if (!isDead && !isProgressing)
         {
             PlayerMovement();
-            if(canJump)
+            if (canJump && !isJumping)
+            {
                 PlayerJump();
+                isJumping = true;
+                StartCoroutine(IsJumping());
+            }
         }
     }
 
@@ -99,20 +103,18 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
     }
 
-    /*
-    TODO: FIX PLAYER JUMP
-    
-        Jumping twice per frame in some cases.
-    */
+     
     void PlayerJump()
     {
-        //Player jumps if grounded and pressing space
-        //if (isGrounded && Input.GetAxis("Jump") == 1)
-        //{
-            rb.AddForce(0f, jumpForce, 0f, ForceMode.Impulse);
-            Debug.Log("Jump Applied");
-            isGrounded = false;
-        //}
+        rb.AddForce(0f, jumpForce, 0f, ForceMode.Impulse);
+        isGrounded = false;
+    }
+
+
+    private IEnumerator IsJumping()
+    {
+        yield return new WaitForSeconds(0.2f);
+        isJumping = false;
     }
     
     

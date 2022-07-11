@@ -110,9 +110,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveForce: 40
-  maxSpeed: 6
+  maxSpeed: 10
   jumpForce: 7
   midAirDampingCoeff: 0.3
+  jumpEnabled: 1
+  isGrounded: 0
 --- !u!54 &5411283269819092201
 Rigidbody:
   m_ObjectHideFlags: 0

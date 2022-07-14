@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float maxSpeed = 4f;
     [SerializeField] public float jumpForce = 200f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
-    [SerializeField] public float gravity;
 
     private GameManager gameManager;
     private Rigidbody rb;
@@ -75,12 +74,10 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(IsJumping());
             }
         }
-
-        // Apply custom gravity
-        //rb.AddForce(0f, -1f * gravity, 0f, ForceMode.Acceleration);
     }
 
 
+    //Possibly change to onTriggerEnter
     private void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.tag == "Speed Boost")
@@ -91,8 +88,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    /*
     private void OnTriggerEnter(Collider other)
+    {
+        // Player is grounded if colliding with ground 
+        if (other.gameObject.tag == "Ground")
+            isGrounded = true;
+    }
+    */
+
+
+    private void OnTriggerStay(Collider other)
     {
         // Player is grounded if colliding with ground 
         if (other.gameObject.tag == "Ground")

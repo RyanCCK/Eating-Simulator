@@ -48,6 +48,18 @@ public class TerrainDecay : MonoBehaviour
     }
 
 
+    private void OnCollisionStay(Collision collision)
+    {
+        //while underneath another ground tile, deactivate own ground tile
+    }
+
+
+    private void OnCollisionExit(Collision collision)
+    {
+        //once no longer underneath another ground tile, activate own ground tile
+    }
+
+
     // Update the state of the tile at a fixed time interval and apply state-based changes
     IEnumerator Decay()
     {

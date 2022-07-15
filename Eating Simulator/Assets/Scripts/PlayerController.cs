@@ -103,6 +103,9 @@ public class PlayerController : MonoBehaviour
         // Player is grounded if colliding with ground 
         if (other.gameObject.tag == "Ground")
             isGrounded = true;
+
+        if (other.gameObject.tag == "Oscillating")
+            transform.parent = other.gameObject.transform;
     }
 
 
@@ -111,29 +114,10 @@ public class PlayerController : MonoBehaviour
         // Player is no longer grounded if not colliding with ground
         if (other.gameObject.tag == "Ground")
             isGrounded = false;
+
+        if (other.gameObject.tag == "Oscillating")
+            transform.parent = null;
     }
-
-
-    /*
-    void OnCollisionStay(Collision other)
-    {
-        // Player is grounded if colliding with ground 
-        if (other.gameObject.tag == "Ground")
-            isGrounded = true;
-    }
-    */
-
-
-    // NOTE: This will NOT be called once the terrain the player is standing on is
-    //       destroyed; this is because the ground tile collider will be destroyed.
-    /*
-    void OnCollisionExit(Collision other)
-    {
-        // Player is no longer grounded if not colliding with ground
-        if (other.gameObject.tag == "Ground")
-            isGrounded = false;
-    }
-    */
 
      
     void PlayerJump()

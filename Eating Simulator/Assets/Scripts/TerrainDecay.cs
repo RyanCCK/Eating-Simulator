@@ -88,6 +88,7 @@ public class TerrainDecay : MonoBehaviour
                     gameObject.AddComponent(typeof(Rigidbody));
                     Destroy(GetComponent<Collider>());
                     Destroy(transform.GetChild(0).gameObject);
+                    transform.SetParent(null);
                     break;
                 }
             case DecayStates.breaking:

@@ -8,6 +8,7 @@ TagManager:
   - Ignored By Camera
   - Speed Boost
   - Destructible
+  - Oscillating
   layers:
   - Default
   - TransparentFX

@@ -11,6 +11,7 @@ public class OscRotator : MonoBehaviour
     [SerializeField] public float zRotation;
     [SerializeField] public float zSpeed;
     [SerializeField] public float waitTime = 0f;
+    [SerializeField] public float secondsPauseAtNoRotation = 0f;
 
     private Vector3 center;
     private float xRotThisFrame;

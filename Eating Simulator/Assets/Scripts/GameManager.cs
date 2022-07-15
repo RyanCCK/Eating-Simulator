@@ -50,17 +50,10 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-
-    }
-
-
     // Handles progression to the next level
     public void LoadNextLevel()
     {
-        onLevelAdvance();
+        onLevelAdvance();   //Event
         StartCoroutine(NextLevelRoutine());
     }
 

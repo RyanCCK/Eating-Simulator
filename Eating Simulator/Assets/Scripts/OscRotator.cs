@@ -11,13 +11,14 @@ public class OscRotator : MonoBehaviour
     [SerializeField] public float zRotation;
     [SerializeField] public float zSpeed;
     [SerializeField] public float waitTime = 0f;
-    [SerializeField] public float secondsPauseAtNoRotation = 0f;
+    [SerializeField] public bool waitForPlayerContact = false;
 
     private Vector3 center;
     private float xRotThisFrame;
     private float yRotThisFrame;
     private float zRotThisFrame;
     private bool waiting = true;
+    private bool playerContact = false;
 
 
     private void Awake()
@@ -40,7 +41,7 @@ public class OscRotator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!waiting)
+        if (!waiting && (!waitForPlayerContact || (waitForPlayerContact && playerContact)))
         {
             xRotThisFrame = (Mathf.Sin(Time.time * xSpeed) * xRotation) - (Mathf.Sin((Time.time - Time.deltaTime) * xSpeed) * xRotation);
             yRotThisFrame = (Mathf.Sin(Time.time * ySpeed) * yRotation) - (Mathf.Sin((Time.time - Time.deltaTime) * ySpeed) * yRotation);
@@ -53,6 +54,13 @@ public class OscRotator : MonoBehaviour
             //z rotation
             gameObject.transform.RotateAround(center, Vector3.forward, zRotThisFrame);
         }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+            playerContact = true;
     }
 
 

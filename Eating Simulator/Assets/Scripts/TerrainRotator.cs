@@ -8,9 +8,11 @@ public class TerrainRotator : MonoBehaviour
     [SerializeField] public float ySpeed = 0f;
     [SerializeField] public float zSpeed = 0f;
     [SerializeField] public float waitTime = 0f;
+    [SerializeField] public bool waitForPlayerContact = false;
 
     private Vector3 center;
     private bool waiting = true;
+    private bool playerContact = false;
 
 
     private void Awake()
@@ -33,7 +35,7 @@ public class TerrainRotator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!waiting)
+        if (!waiting && (!waitForPlayerContact || (waitForPlayerContact && playerContact)))
         {
             //x rotation
             gameObject.transform.RotateAround(center, Vector3.right, xSpeed * Time.deltaTime);
@@ -42,6 +44,13 @@ public class TerrainRotator : MonoBehaviour
             //z rotation
             gameObject.transform.RotateAround(center, Vector3.forward, zSpeed * Time.deltaTime);
         }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+            playerContact = true;
     }
 
 

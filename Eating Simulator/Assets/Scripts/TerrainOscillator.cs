@@ -11,11 +11,13 @@ public class TerrainOscillator : MonoBehaviour
     [SerializeField] public float zSpeed = 0f;
     [SerializeField] public float zAmp = 1f;
     [SerializeField] public float waitTime = 0f;
+    [SerializeField] public bool waitForPlayerContact = false;
 
     private float xTrans = 0f;
     private float yTrans = 0f;
     private float zTrans = 0f;
     private bool waiting = true;
+    private bool playerContact = false;
 
 
     private void Start()
@@ -27,13 +29,22 @@ public class TerrainOscillator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!waiting)
+        // Only move the terrain once the waiting period is over, 
+        // AND either no player contact is required, or player contact is required and has been made
+        if(!waiting && (!waitForPlayerContact || (waitForPlayerContact && playerContact)))
         {
             xTrans = (Mathf.Sin(Time.time * xSpeed) * xAmp) - (Mathf.Sin((Time.time - Time.deltaTime) * xSpeed) * xAmp);
             yTrans = (Mathf.Sin(Time.time * ySpeed) * yAmp) - (Mathf.Sin((Time.time - Time.deltaTime) * ySpeed) * yAmp);
             zTrans = (Mathf.Sin(Time.time * zSpeed) * zAmp) - (Mathf.Sin((Time.time - Time.deltaTime) * zSpeed) * zAmp);
             transform.Translate(xTrans, yTrans, zTrans);
         }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+            playerContact = true;
     }
 
 

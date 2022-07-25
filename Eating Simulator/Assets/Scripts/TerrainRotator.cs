@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class TerrainRotator : MonoBehaviour
 {
+    [SerializeField] public Vector3 xAxis = Vector3.right;
+    [SerializeField] public Vector3 yAxis = Vector3.up;
+    [SerializeField] public Vector3 zAxis = Vector3.forward;
     [SerializeField] public float xSpeed = 0f;
     [SerializeField] public float ySpeed = 0f;
     [SerializeField] public float zSpeed = 0f;
@@ -38,11 +41,11 @@ public class TerrainRotator : MonoBehaviour
         if (!waiting && (!waitForPlayerContact || (waitForPlayerContact && playerContact)))
         {
             //x rotation
-            gameObject.transform.RotateAround(center, Vector3.right, xSpeed * Time.deltaTime);
+            gameObject.transform.RotateAround(center, xAxis, xSpeed * Time.deltaTime);
             //y rotation
-            gameObject.transform.RotateAround(center, Vector3.up, ySpeed * Time.deltaTime);
+            gameObject.transform.RotateAround(center, yAxis, ySpeed * Time.deltaTime);
             //z rotation
-            gameObject.transform.RotateAround(center, Vector3.forward, zSpeed * Time.deltaTime);
+            gameObject.transform.RotateAround(center, zAxis, zSpeed * Time.deltaTime);
         }
     }
 

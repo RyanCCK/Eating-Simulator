@@ -17,9 +17,12 @@ public class PlayerController : MonoBehaviour
     private bool isDead;
     private bool isProgressing;
     private bool isGrounded;
-    private bool canJump;
-    private bool isJumping = false;
     private bool isSpeedBoostApplied;
+    private bool jumpAvailable;
+    private bool jumpKeyPressed;
+    private bool isJumping = false;
+    private float speedBoostTimer = 0f;
+    private float currentSpeedBoostAcceleration;
 
 
     private void Awake()
@@ -54,11 +57,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!isDead && !isProgressing && isGrounded)
+        if (!isDead && !isProgressing)
         {
-            if (Input.GetAxis("Jump") == 1) canJump = true;
+            if (Input.GetAxis("Jump") == 1) jumpKeyPressed = true;
+            else jumpKeyPressed = false;
         }
-        else canJump = false;
     }
 
 
@@ -66,36 +69,47 @@ public class PlayerController : MonoBehaviour
     {
         if (!isDead && !isProgressing)
         {
+            //Player movement and jump logic
             PlayerMovement();
-            if (canJump && !isJumping)
+            if (jumpAvailable && jumpKeyPressed && !isJumping)
             {
-                PlayerJump();
-                isJumping = true;
+                if (isSpeedBoostApplied) SpeedBoostJump();
+                else PlayerJump();
                 StartCoroutine(IsJumping());
+            }
+            //Speed boost logic
+            if (isSpeedBoostApplied)
+            {
+                rb.useGravity = false;
+                if (speedBoostTimer > 0)
+                {
+                    rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, currentSpeedBoostAcceleration);
+                    speedBoostTimer -= Time.fixedDeltaTime;
+                }
+                else
+                {
+                    rb.useGravity = true;
+                    isSpeedBoostApplied = false;
+                    speedBoostTimer = 0;
+                }
             }
         }
     }
 
 
-    //Possibly change to onTriggerEnter
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.tag == "Speed Boost")
-        {
-            float speedBoostAcceleration = other.gameObject.GetComponent<SpeedBoost>().acceleration;
-            float speedBoostDuration = other.gameObject.GetComponent<SpeedBoost>().duration;
-            StartCoroutine(SpeedBoost(speedBoostAcceleration, speedBoostDuration));
-        }
-    }
-
-    /*
     private void OnTriggerEnter(Collider other)
     {
-        // Player is grounded if colliding with ground 
         if (other.gameObject.tag == "Ground")
-            isGrounded = true;
+        {
+            if (!isJumping) jumpAvailable = true;
+        }
+        if (other.gameObject.tag == "Speed Boost")
+        {
+            isSpeedBoostApplied = true;
+            currentSpeedBoostAcceleration = other.gameObject.GetComponent<SpeedBoost>().acceleration;
+            speedBoostTimer = other.gameObject.GetComponent<SpeedBoost>().duration;
+        }
     }
-    */
 
 
     private void OnTriggerStay(Collider other)
@@ -119,18 +133,40 @@ public class PlayerController : MonoBehaviour
             transform.parent = null;
     }
 
-     
+
     void PlayerJump()
     {
+        if (rb.velocity.y < 0)
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(0f, jumpForce, 0f, ForceMode.Impulse);
+        jumpAvailable = false; 
         //Debug.Log("Jump Registered");
-        isGrounded = false;
+    }
+
+
+    void SpeedBoostJump()
+    {
+        if (rb.velocity.y < 0)
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        jumpAvailable = false;
+        StartCoroutine(SpeedBoostJumpRoutine());
+    }
+
+
+    private IEnumerator SpeedBoostJumpRoutine()
+    {
+        float jumpVelocity = 5f;
+        float jumpDuration = 1f;
+        rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
+        yield return new WaitForSeconds(jumpDuration);
+        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
     }
 
 
     private IEnumerator IsJumping()
     {
-        yield return new WaitForSeconds(0.2f);
+        isJumping = true;
+        yield return new WaitForSeconds(0.25f);
         isJumping = false;
     }
     
@@ -171,16 +207,6 @@ public class PlayerController : MonoBehaviour
         adjustedVelocity.y = yComp;
 
         rb.velocity = adjustedVelocity;
-    }
-
-
-    // Handles application of speed boost from speed boost tile
-    private IEnumerator SpeedBoost(float acceleration, float duration)
-    {
-        isSpeedBoostApplied = true;
-        rb.AddForce(0f, 0f, acceleration, ForceMode.Impulse);
-        yield return new WaitForSeconds(duration);
-        isSpeedBoostApplied = false;
     }
 
 

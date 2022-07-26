@@ -63,12 +63,14 @@ public class CameraDynamics : MonoBehaviour
         virtualCam.Follow = player.transform;
 
         //Set all Framing Transposer component values
+        /*
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = camDistanceVirt;
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_XDamping = xDampingVirt;
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_YDamping = yDampingVirt;
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_ZDamping = zDampingVirt;
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_UnlimitedSoftZone = unlimitedSoftVirt;
         virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_TargetMovementOnly = targetMovementEnableVirt;
+        */
     }
 
     

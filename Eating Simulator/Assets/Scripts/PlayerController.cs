@@ -157,9 +157,10 @@ public class PlayerController : MonoBehaviour
     {
         float jumpVelocity = 5f;
         float jumpDuration = 1f;
-        rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
+        float currentYVelocity = rb.velocity.y;
+        rb.velocity = new Vector3(rb.velocity.x, jumpVelocity + currentYVelocity, rb.velocity.z);
         yield return new WaitForSeconds(jumpDuration);
-        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        rb.velocity = new Vector3(rb.velocity.x, currentYVelocity, rb.velocity.z);
     }
 
 

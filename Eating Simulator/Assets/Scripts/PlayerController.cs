@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
 
     private GameManager gameManager;
     private Rigidbody rb;
-
     private bool isDead;
     private bool isProgressing;
     private bool isGrounded;
@@ -23,6 +22,7 @@ public class PlayerController : MonoBehaviour
     private bool isJumping = false;
     private float speedBoostTimer = 0f;
     private float currentSpeedBoostAcceleration;
+    private Vector3 currentSpeedBoostDirection;
 
 
     private void Awake()
@@ -83,7 +83,17 @@ public class PlayerController : MonoBehaviour
                 rb.useGravity = false;
                 if (speedBoostTimer > 0)
                 {
-                    rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, currentSpeedBoostAcceleration);
+                    Vector3 updatedVelocity = new Vector3();
+                    if (currentSpeedBoostDirection.x != 0)
+                        updatedVelocity.x = currentSpeedBoostDirection.x * currentSpeedBoostAcceleration;
+                    else updatedVelocity.x = rb.velocity.x;
+                    if (currentSpeedBoostDirection.y != 0)
+                        updatedVelocity.y = currentSpeedBoostDirection.y * currentSpeedBoostAcceleration;
+                    else updatedVelocity.y = rb.velocity.y;
+                    if (currentSpeedBoostDirection.z != 0)
+                        updatedVelocity.z = currentSpeedBoostDirection.z * currentSpeedBoostAcceleration;
+                    else updatedVelocity.z = rb.velocity.z;
+                    rb.velocity = updatedVelocity;
                     speedBoostTimer -= Time.fixedDeltaTime;
                 }
                 else
@@ -106,8 +116,9 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Speed Boost")
         {
             isSpeedBoostApplied = true;
-            currentSpeedBoostAcceleration = other.gameObject.GetComponent<SpeedBoost>().acceleration;
-            speedBoostTimer = other.gameObject.GetComponent<SpeedBoost>().duration;
+            currentSpeedBoostDirection = other.GetComponent<SpeedBoost>().direction;
+            currentSpeedBoostAcceleration = other.GetComponent<SpeedBoost>().acceleration;
+            speedBoostTimer = other.GetComponent<SpeedBoost>().duration;
         }
     }
 
@@ -118,7 +129,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Ground")
             isGrounded = true;
 
-        if (other.gameObject.tag == "Oscillating")
+        if (other.gameObject.tag == "MovingPlatform")
             transform.parent = other.gameObject.transform;
     }
 
@@ -129,7 +140,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Ground")
             isGrounded = false;
 
-        if (other.gameObject.tag == "Oscillating")
+        if (other.gameObject.tag == "MovingPlatform")
             transform.parent = null;
     }
 

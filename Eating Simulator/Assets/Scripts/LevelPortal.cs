@@ -6,6 +6,7 @@ public class LevelPortal : MonoBehaviour
 {
     private GameManager gameManager;
 
+
     private void Start()
     {
         gameManager = GameManager.Instance;

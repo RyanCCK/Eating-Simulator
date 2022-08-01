@@ -12,13 +12,6 @@ public class CameraDynamics : MonoBehaviour
     private GameManager gameManager;
     private GameObject player;
 
-    private float camDistanceVirt = 8f;
-    private float xDampingVirt = 1.5f;
-    private float yDampingVirt = 0f;
-    private float zDampingVirt = 1.5f;
-    private bool unlimitedSoftVirt = true;
-    private bool targetMovementEnableVirt = false;
-
 
     // Require that virtualCam and deathCam have been assigned in inspector
     private void Awake()
@@ -31,15 +24,13 @@ public class CameraDynamics : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.resetAllObjectDefaults += SetToDefaults;
-        GameManager.deathCameraEvent += DeathView;
+        GameManager.DeathCameraEvent += DeathCamera;
     }
 
 
     private void OnDisable()
     {
-        GameManager.resetAllObjectDefaults -= SetToDefaults;
-        GameManager.deathCameraEvent -= DeathView;
+        GameManager.DeathCameraEvent -= DeathCamera;
     }
 
 
@@ -48,34 +39,11 @@ public class CameraDynamics : MonoBehaviour
     {
         gameManager = GameManager.Instance;
         player = GameObject.FindGameObjectWithTag("Player");
-        SetToDefaults();
-    }
-
-
-    ////////////TODO////////////TODO////////////TODO////////////
-    // Set defaults for deathCam also
-    ////////////TODO////////////TODO////////////TODO////////////
-
-    // Sets all camera values to default values
-    public void SetToDefaults()
-    {
-        //Set follow target
-        virtualCam.Follow = player.transform;
-
-        //Set all Framing Transposer component values
-        /*
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = camDistanceVirt;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_XDamping = xDampingVirt;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_YDamping = yDampingVirt;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_ZDamping = zDampingVirt;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_UnlimitedSoftZone = unlimitedSoftVirt;
-        virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>().m_TargetMovementOnly = targetMovementEnableVirt;
-        */
     }
 
     
     // Change active virtual camera to deathCam
-    public void DeathView()
+    public void DeathCamera()
     {
         deathCam.Priority = virtualCam.Priority + 1;
     }

@@ -14,11 +14,10 @@ public class GameManager : MonoBehaviour
     public delegate void DeathAction();
     public delegate void LevelAction();
     public delegate void DeathCamera();
-
-    public static event ResetAllObjectDefaults resetAllObjectDefaults;
+    
     public static event DeathAction onDeath;
     public static event LevelAction onLevelAdvance;
-    public static event DeathCamera deathCameraEvent;
+    public static event DeathCamera DeathCameraEvent;
 
     private int currentSceneIndex = 0;
     private int nextLevelIndex = 1;
@@ -85,10 +84,8 @@ public class GameManager : MonoBehaviour
     // Coroutine for timed death event
     private IEnumerator DeathRoutine()
     {
-        deathCameraEvent();     //Event
+        DeathCameraEvent();     //Event
         yield return new WaitForSeconds(deathScreenTime);
-        
-        resetAllObjectDefaults();   //Event
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

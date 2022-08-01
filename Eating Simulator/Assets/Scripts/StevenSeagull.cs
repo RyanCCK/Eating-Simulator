@@ -25,7 +25,7 @@ public class StevenSeagull : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         if(movementEnabled)
@@ -44,10 +44,22 @@ public class StevenSeagull : MonoBehaviour
     }
 
     
+    /*
+     * POSSIBLE TO-DO:
+     * Check if player can take knockback before dealing knockback.
+     * Some player states may prevent player from receiving knockback, such as the Seagull Morph power-up.
+     * (Additionally, functionality may need to be added to deal knockback to the seagull itself.)
+     */
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
             collision.gameObject.GetComponent<Rigidbody>().AddForceAtPosition(collision.contacts[0].normal * collisionKnockback, 
                                                                               collision.gameObject.transform.position, ForceMode.Impulse);
     }
+
+
+    /*
+     * TO-DO:
+     * Add death method, to kill seagull and play an animation or particle effect when this happens.
+     */ 
 }

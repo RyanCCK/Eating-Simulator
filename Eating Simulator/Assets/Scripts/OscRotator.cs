@@ -10,8 +10,8 @@ public class OscRotator : MonoBehaviour
     [SerializeField] public float ySpeed;
     [SerializeField] public float zRotation;
     [SerializeField] public float zSpeed;
-    [SerializeField] public float waitTime = 0f;
     [SerializeField] public bool waitForPlayerContact = false;
+    [SerializeField] public float waitTime = 0f;
 
     private Vector3 center;
     private float xRotThisFrame;
@@ -23,38 +23,40 @@ public class OscRotator : MonoBehaviour
     private float xDir = 1f;
     private float yDir = 1f;
     private float zDir = 1f;
-    private bool waiting = true;
-    private bool playerContact = false;
+    private bool playerContact = true;
+    private bool waiting = false;
+    
 
 
     private void Awake()
     {
+        // Calculate actual center of gameobject from average position of all children
         Component[] childTransforms = GetComponentsInChildren<Transform>();
         foreach (Transform child in childTransforms)
         {
             center += child.position;
         }
         center /= childTransforms.Length;
+
+        // Wait for player contact if necessary
+        if (waitForPlayerContact) playerContact = false;
     }
 
 
     private void Start()
     {
-        StartCoroutine(Waiting());
+        if (waitTime > 0)
+        {
+            waiting = true;
+            StartCoroutine(Waiting());
+        }
     }
 
-
-    // Update is called once per frame
+    
     void Update()
     {
-        if (!waiting && (!waitForPlayerContact || (waitForPlayerContact && playerContact)))
+        if (!waiting && playerContact)
         {
-            /*
-            xRotThisFrame = (Mathf.Sin(Time.time * xSpeed) * xRotation) - (Mathf.Sin((Time.time - Time.deltaTime) * xSpeed) * xRotation);
-            yRotThisFrame = (Mathf.Sin(Time.time * ySpeed) * yRotation) - (Mathf.Sin((Time.time - Time.deltaTime) * ySpeed) * yRotation);
-            zRotThisFrame = (Mathf.Sin(Time.time * zSpeed) * zRotation) - (Mathf.Sin((Time.time - Time.deltaTime) * zSpeed) * zRotation);
-            */
-
             if (currentXRot > xRotation / 2.0)
                 xDir = -1;
             else if (currentXRot < -1 * (xRotation / 2.0))

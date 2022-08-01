@@ -122,7 +122,7 @@ Material:
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _HorizonColor: {r: 0.6509434, g: 0, b: 0.47480565, a: 1}
-    - _LinesColor: {r: 0.040005345, g: 0.045633662, b: 0.2924528, a: 1}
+    - _LinesColor: {r: 0.0045834924, g: 0.0049793953, b: 0.9716981, a: 1}
     - _SkyColor: {r: 0, g: 0.14634156, b: 1, a: 1}
     - _StarColor: {r: 9.425875, g: 1.7340055, b: 8.046962, a: 0}
     - _SunColorOne: {r: 1, g: 0.80887866, b: 0.56078434, a: 1}

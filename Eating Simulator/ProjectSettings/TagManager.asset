@@ -9,6 +9,9 @@ TagManager:
   - Speed Boost
   - Destructible
   - MovingPlatform
+  - Indestructible
+  - Tile
+  - Platform
   layers:
   - Default
   - TransparentFX

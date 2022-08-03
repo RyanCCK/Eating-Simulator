@@ -168,7 +168,7 @@ Material:
     - _CameraFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EMISSION_COLOR: {r: 1, g: 0.2688679, b: 0.9789476, a: 0}
-    - _EmissionColor: {r: 8.429822, g: 0.5324098, b: 8.47419, a: 1}
+    - _EmissionColor: {r: 4.064284, g: 0, b: 17.504229, a: 1}
     - _GridColor: {r: 2.118547, g: 0, b: 2.118547, a: 1}
     - _GridSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _GroundColor: {r: 0.1372549, g: 0, b: 0.2470588, a: 1}

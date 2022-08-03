@@ -9,17 +9,16 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] public float deathScreenTime = 2f;
     [SerializeField] public float levelLoadTime = 2f;
-
-    public delegate void ResetAllObjectDefaults();
+    
     public delegate void DeathAction();
     public delegate void LevelAction();
     public delegate void DeathCamera();
     
-    public static event DeathAction onDeath;
-    public static event LevelAction onLevelAdvance;
+    public static event DeathAction OnDeath;
+    public static event LevelAction OnLevelAdvance;
     public static event DeathCamera DeathCameraEvent;
 
-    private int currentSceneIndex = 0;
+    private int currentLevelIndex = 0;
     private int nextLevelIndex = 1;
 
     private static GameManager gameManager;
@@ -52,7 +51,7 @@ public class GameManager : MonoBehaviour
     // Handles progression to the next level
     public void LoadNextLevel()
     {
-        onLevelAdvance();   //Event
+        OnLevelAdvance();   //Event
         StartCoroutine(NextLevelRoutine());
     }
 
@@ -66,7 +65,7 @@ public class GameManager : MonoBehaviour
         if (nextLevelIndex < SceneManager.sceneCountInBuildSettings)
         {
             SceneManager.LoadScene(nextLevelIndex);
-            ++nextLevelIndex; ++currentSceneIndex;
+            ++nextLevelIndex; ++currentLevelIndex;
         }
         else Debug.Log("YOU WON THE GAME!");
 
@@ -76,7 +75,7 @@ public class GameManager : MonoBehaviour
     // Handles processing of events on player death
     public void PlayerDeath()
     {
-        onDeath();      //Event
+        OnDeath();      //Event
         StartCoroutine(DeathRoutine());
     }
 

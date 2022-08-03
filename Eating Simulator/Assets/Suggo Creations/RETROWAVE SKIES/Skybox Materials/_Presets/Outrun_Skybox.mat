@@ -37,7 +37,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Cubemap:
-        m_Texture: {fileID: 8900000, guid: d7769717f9e77aa4ba505c36a29b9eaf, type: 3}
+        m_Texture: {fileID: 8900000, guid: 522184cc29709ee4286e372b5aebde68, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SunMask:
@@ -61,7 +61,7 @@ Material:
     - BOOLEAN_CUBEMAP: 1
     - BOOLEAN_GLITCHYMOON: 1
     - Vector1_7d421ef4d57f45e586330be25bfb5941: 12
-    - Vector1_a770b768a8ca40a9b814a01444e6b850: 3.92
+    - Vector1_a770b768a8ca40a9b814a01444e6b850: 5
     - _AddPrecomputedVelocity: 0
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 0
@@ -91,7 +91,7 @@ Material:
     - _OpaqueCullMode: 2
     - _RenderQueueType: 1
     - _SrcBlend: 1
-    - _StarDensity: 15
+    - _StarDensity: 27.76
     - _StencilRef: 0
     - _StencilRefDepth: 0
     - _StencilRefDistortionVec: 4
@@ -102,7 +102,7 @@ Material:
     - _StencilWriteMaskDistortionVec: 4
     - _StencilWriteMaskGBuffer: 14
     - _StencilWriteMaskMV: 40
-    - _SunMaskSize: -0.81
+    - _SunMaskSize: -0.6
     - _SunMaskSpherize: 12
     - _SunSize: 0.31
     - _SurfaceType: 0
@@ -121,10 +121,10 @@ Material:
     m_Colors:
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _HorizonColor: {r: 0.6509434, g: 0, b: 0.47480565, a: 1}
-    - _LinesColor: {r: 0.0045834924, g: 0.0049793953, b: 0.9716981, a: 1}
-    - _SkyColor: {r: 0, g: 0.14634156, b: 1, a: 1}
-    - _StarColor: {r: 9.425875, g: 1.7340055, b: 8.046962, a: 0}
-    - _SunColorOne: {r: 1, g: 0.80887866, b: 0.56078434, a: 1}
-    - _SunColorTwo: {r: 0.9568628, g: 0.58431375, b: 0.8745099, a: 1}
+    - _HorizonColor: {r: 0.6603774, g: 0.19239488, b: 0.09656461, a: 1}
+    - _LinesColor: {r: 0.0050168843, g: 0, b: 0.49056602, a: 1}
+    - _SkyColor: {r: 0, g: 0.15466309, b: 1, a: 1}
+    - _StarColor: {r: 766.9961, g: 766.9961, b: 766.9961, a: 0}
+    - _SunColorOne: {r: 0, g: 63.999992, b: 24.125652, a: 1}
+    - _SunColorTwo: {r: 0.020483544, g: 0, b: 0.09558987, a: 1}
   m_BuildTextureStacks: []

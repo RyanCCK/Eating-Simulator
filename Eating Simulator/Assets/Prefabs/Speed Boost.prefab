@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 5058274960993600607}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.00031998754}
   m_LocalPosition: {x: -3.76, y: 6.91, z: 5.39}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 2, z: 8}
   m_Children:
   - {fileID: 6170431483192897732}
   m_Father: {fileID: 0}
@@ -96,7 +96,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.25, y: 1.75, z: 1.25}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1452121554963988194
 MonoBehaviour:
@@ -110,8 +110,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78929e416320dfc4f89d9adca799ddf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 30
-  duration: 1
+  impulseForce: 100
+  continuouslyAppliedForce: 50
+  maxSpeed: 100
+  forceDuration: 2
+  totalDuration: 5
+  forceDirection: {x: 0, y: 0, z: 0}
+  forceDirectionPower: 1
 --- !u!65 &6698064337006686340
 BoxCollider:
   m_ObjectHideFlags: 0

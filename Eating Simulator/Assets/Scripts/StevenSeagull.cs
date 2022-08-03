@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class StevenSeagull : MonoBehaviour
 {
     [SerializeField] Vector3[] points;
@@ -46,13 +47,11 @@ public class StevenSeagull : MonoBehaviour
     
     /*
      * POSSIBLE TO-DO:
-     * Check if player can take knockback before dealing knockback.
-     * Some player states may prevent player from receiving knockback, such as the Seagull Morph power-up.
-     * (Additionally, functionality may need to be added to deal knockback to the seagull itself.)
+     * Build functionality for player to deal knockback to seagull, under certain conditions
      */
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player" && collision.gameObject.GetComponent<PlayerController>().canReceiveKnockback)
             collision.gameObject.GetComponent<Rigidbody>().AddForceAtPosition(collision.contacts[0].normal * collisionKnockback, 
                                                                               collision.gameObject.transform.position, ForceMode.Impulse);
     }

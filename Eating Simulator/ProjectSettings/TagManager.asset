@@ -8,10 +8,10 @@ TagManager:
   - Ignored By Camera
   - Speed Boost
   - Destructible
-  - MovingPlatform
   - Indestructible
   - Tile
   - Platform
+  - Moving Platform
   layers:
   - Default
   - TransparentFX

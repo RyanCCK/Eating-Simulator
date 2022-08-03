@@ -54,7 +54,7 @@ Material:
     - _Metallic: 0
     - _Smoothness: 1
     m_Colors:
-    - _GridColor: {r: 0.49939832, g: 1.1140424, b: 7.3373137, a: 1}
+    - _GridColor: {r: 2.572549, g: 4.329412, b: 12.42353, a: 1}
     - _GridSpeed: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0, g: 0, b: 0, a: 1}
     - _Tiling: {r: 0.05, g: 0.05, b: 0, a: 0}

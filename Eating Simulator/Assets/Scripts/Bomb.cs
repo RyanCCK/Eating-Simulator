@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Bomb : MonoBehaviour
 {
     [SerializeField] public float explosionRadius = 3f;

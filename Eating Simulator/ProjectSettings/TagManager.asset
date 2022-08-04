@@ -12,6 +12,8 @@ TagManager:
   - Tile
   - Platform
   - Moving Platform
+  - Power Up
+  - Camera Rotation Zone
   layers:
   - Default
   - TransparentFX

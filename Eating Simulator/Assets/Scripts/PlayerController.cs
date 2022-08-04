@@ -28,8 +28,6 @@ public class PlayerController : MonoBehaviour
 
     private GameManager gameManager;
     private Rigidbody rb;
-    private bool isDead;
-    private bool isProgressing;
     private bool isGrounded;
     private float horizontalInputAxis;
     private float verticalInputAxis;
@@ -51,8 +49,6 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         currentState = State.Default;
-        isDead = false;
-        isProgressing = false;
     }
 
 
@@ -81,34 +77,48 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!isDead && !isProgressing)
+        switch (currentState)
         {
-            horizontalInputAxis = Input.GetAxis("Horizontal");
-            verticalInputAxis = Input.GetAxis("Vertical");
-            jumpInputAxis = Input.GetAxis("Jump");
+            case State.Default:
+            {
+                horizontalInputAxis = Input.GetAxis("Horizontal");
+                verticalInputAxis = Input.GetAxis("Vertical");
+                jumpInputAxis = Input.GetAxis("Jump");
+
+                // If there is a power-up waiting in nextState, use it
+                if (nextState == State.PowerUp1 || nextState == State.PowerUp2)
+                    ChangeState(nextState);
+
+                break;
+            }
         }
     }
 
 
     void FixedUpdate()
     {
-        if (!isDead && !isProgressing)
+        switch (currentState)
         {
-            // Handle horizontal player movement
-            HorizontalMovement();
-
-            // Handle player jump
-            if (jumpInputAxis > 0 && jumpAvailable)
+            case State.Default:
             {
-                Jump();
-                jumpAvailable = false;
-                StartCoroutine(IsJumping());
-            }
+                // Handle horizontal player movement
+                HorizontalMovement();
 
-            // Handle speed boost
-            if (isSpeedBoostApplied)
-            {
-                MaintainSpeedBoost();
+                // Handle player jump
+                if (jumpInputAxis > 0 && jumpAvailable)
+                {
+                    Jump();
+                    jumpAvailable = false;
+                    StartCoroutine(IsJumping());
+                }
+
+                // Handle speed boost
+                if (isSpeedBoostApplied)
+                {
+                    MaintainSpeedBoost();
+                }
+
+                break;
             }
         }
     }
@@ -126,6 +136,10 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Speed Boost")
         {
             ApplySpeedBoost(other.gameObject);
+        }
+        if (other.gameObject.tag == "Power Up")
+        {
+            // Set nextState to the correct PowerUp state
         }
     }
 
@@ -267,7 +281,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    // Clamps horizontal velocity to maxSpeed, if no speed-related buffs are being applied.
+    // Clamps horizontal velocity to maxSpeed 
     private void ConstrainHorizontalVelocity()
     {
         Vector3 adjustedVelocity = rb.velocity;
@@ -287,15 +301,17 @@ public class PlayerController : MonoBehaviour
     // Handles what happens to the player on death
     private void OnDeath()
     {
-        isDead = true;
+        ChangeState(State.Dead);
+        StopAllCoroutines();
+        rb.constraints = RigidbodyConstraints.FreezeAll;
     }
 
 
     // Handles what happens to the player on level advancement
     private void OnLevelAdvance()
     {
-        isProgressing = true;
-        rb.useGravity = false;
+        ChangeState(State.Advancing);
+        StopAllCoroutines();
         rb.constraints = RigidbodyConstraints.FreezeAll;
     }
 
@@ -310,9 +326,87 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    // Changes the player's state to a given new state, if valid. Otherwise resets player to default state.
+    // Changes the player's state to a given new state, if valid. 
+    // Will not change the player's state if the given nextState is invalid.
+    // If no nextState is given, will set player to Default state.
+
+    /* LIST OF VALID STATE TRANSITIONS:    
+     *  
+     * Default -> {Default, Dead, Advancing, PowerUp1, PowerUp2}
+     * Dead -> {Dead}
+     * Advancing -> {Advancing}
+     * PowerUp1 -> {Default, Dead, Advancing, UsingPowerUp1}
+     * PowerUp2 -> {Default, Dead, Advancing, UsingPowerUp2}
+     * UsingPowerUp1 -> {Default, Dead, Advancing}
+     * UsingPowerUp2 -> {Default, Dead, Advancing}
+     * 
+     */
+
     private void ChangeState(State nextState = State.Default)
     {
-        //Based on current state and new state, call appropriate methods, and set currentState = newState.
+        switch (currentState)
+        {
+            case State.Default:
+            {
+                switch (nextState)
+                {
+                    case State.Default:
+                    {
+                        break;
+                    }
+
+                    case State.Dead:
+                    {
+                        currentState = State.Dead;
+                        nextState = State.Default;
+                        break;
+                    }
+
+                    case State.Advancing:
+                    {
+                        currentState = State.Advancing;
+                        nextState = State.Default;
+                        break;
+                    }
+
+                    default:
+                        Debug.LogError("Invalid next state");
+                        break;
+                }
+                break;
+            }
+
+            case State.Dead:
+            {
+                switch (nextState)
+                {
+                    case State.Dead:
+                    {
+                        break;
+                    }
+
+                    default:
+                        Debug.LogError("Invalid next state");
+                        break;
+                }
+                break;
+            }
+
+            case State.Advancing:
+            {
+                switch (nextState)
+                {
+                    case State.Advancing:
+                    {
+                        break;
+                    }
+
+                    default:
+                        Debug.LogError("Invalid next state");
+                        break;
+                }
+                break;
+            }
+        }
     }
 }

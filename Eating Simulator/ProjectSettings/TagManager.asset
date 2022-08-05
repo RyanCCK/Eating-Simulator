@@ -13,7 +13,7 @@ TagManager:
   - Platform
   - Moving Platform
   - Power Up
-  - Camera Rotation Zone
+  - Player Rotation Zone
   layers:
   - Default
   - TransparentFX

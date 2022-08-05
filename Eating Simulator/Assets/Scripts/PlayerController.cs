@@ -28,6 +28,10 @@ public class PlayerController : MonoBehaviour
 
     private GameManager gameManager;
     private Rigidbody rb;
+    private Quaternion initialRotation;
+    private Quaternion targetRotation = Quaternion.identity;
+    private float rotationSpeed;
+    private float rotationTimeCount = 0f;
     private bool isGrounded;
     private float horizontalInputAxis;
     private float verticalInputAxis;
@@ -81,9 +85,17 @@ public class PlayerController : MonoBehaviour
         {
             case State.Default:
             {
+                // Read player input
                 horizontalInputAxis = Input.GetAxis("Horizontal");
                 verticalInputAxis = Input.GetAxis("Vertical");
                 jumpInputAxis = Input.GetAxis("Jump");
+
+                // Rotate player if necessary
+                if (targetRotation != transform.rotation)
+                {
+                    transform.rotation = Quaternion.Slerp(initialRotation, targetRotation, rotationTimeCount * rotationSpeed);
+                    rotationTimeCount += Time.deltaTime;
+                }
 
                 // If there is a power-up waiting in nextState, use it
                 if (nextState == State.PowerUp1 || nextState == State.PowerUp2)
@@ -151,6 +163,13 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Moving Platform")
             transform.parent = other.gameObject.transform;
+
+        if (other.gameObject.tag == "Player Rotation Zone")
+        {
+            initialRotation = transform.rotation;
+            targetRotation = other.GetComponent<PlayerRotationZone>().rotation;
+            rotationSpeed = other.GetComponent<PlayerRotationZone>().rotationSpeed;
+        }
     }
 
 
@@ -161,6 +180,11 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Moving Platform")
             transform.parent = null;
+
+        if (other.gameObject.tag == "Player Rotation Zone")
+        {
+            initialRotation = transform.rotation;
+        }
     }
 
 
@@ -181,7 +205,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Apply horizontal movement force
-        rb.AddForce(xForce, 0f, zForce, ForceMode.Force);
+        rb.AddRelativeForce(xForce, 0f, zForce, ForceMode.Force);
 
         // Clamp horizontal speed to maxSpeed if no speed boost is being applied.
         if (!isSpeedBoostApplied)

@@ -124,7 +124,7 @@ Material:
     - _HorizonColor: {r: 0.6320754, g: 0.14218317, b: 0.08050018, a: 1}
     - _LinesColor: {r: 0.06939254, g: 0.057271272, b: 0.3679245, a: 1}
     - _SkyColor: {r: 0.3537736, g: 0.45260826, b: 1, a: 1}
-    - _StarColor: {r: 94.7321, g: 0, b: 179.14688, a: 0}
+    - _StarColor: {r: 3.2, g: 0, b: 5.992157, a: 0}
     - _SunColorOne: {r: 0, g: 55.61987, b: 38.3873, a: 1}
     - _SunColorTwo: {r: 0.011189256, g: 0.0048059775, b: 0.03773582, a: 1}
   m_BuildTextureStacks: []

@@ -45,9 +45,9 @@ public class TerrainOscillator : MonoBehaviour
     {
         if(!waiting && playerContact)
         {
-            xTrans = (initialPosition.x + xCurve.Evaluate((Time.time * xSpeed) % 1) * xAmp) - transform.position.x;
-            yTrans = (initialPosition.y + yCurve.Evaluate((Time.time * ySpeed) % 1) * yAmp) - transform.position.y;
-            zTrans = (initialPosition.z + zCurve.Evaluate((Time.time * zSpeed) % 1) * zAmp) - transform.position.z;
+            xTrans = (initialPosition.x + Mathf.Sin((Time.time * xSpeed)) * xAmp) - transform.position.x;
+            yTrans = (initialPosition.y + Mathf.Sin((Time.time * ySpeed)) * yAmp) - transform.position.y;
+            zTrans = (initialPosition.z + Mathf.Sin((Time.time * zSpeed)) * zAmp) - transform.position.z;
 
             transform.Translate(xTrans, yTrans, zTrans);
         }

@@ -91,11 +91,13 @@ public class PlayerController : MonoBehaviour
                 jumpInputAxis = Input.GetAxis("Jump");
 
                 // Rotate player if necessary
+                /*
                 if (targetRotation != transform.rotation)
                 {
-                    transform.rotation = Quaternion.Slerp(initialRotation, targetRotation, rotationTimeCount * rotationSpeed);
+                    transform.rotation = Quaternion.Slerp(initialRotation, targetRotation, rotationTimeCount * rotationSpeed * 0.1f);
                     rotationTimeCount += Time.deltaTime;
                 }
+                */
 
                 // If there is a power-up waiting in nextState, use it
                 if (nextState == State.PowerUp1 || nextState == State.PowerUp2)
@@ -113,6 +115,13 @@ public class PlayerController : MonoBehaviour
         {
             case State.Default:
             {
+                // Rotate player if necessary
+                if (targetRotation != transform.rotation)
+                {
+                    transform.rotation = Quaternion.Slerp(initialRotation, targetRotation, rotationTimeCount * rotationSpeed * 0.1f);
+                    rotationTimeCount += Time.fixedDeltaTime;
+                }
+
                 // Handle horizontal player movement
                 HorizontalMovement();
 

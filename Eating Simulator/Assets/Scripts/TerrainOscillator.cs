@@ -17,6 +17,7 @@ public class TerrainOscillator : MonoBehaviour
     public AnimationCurve yCurve;
     public AnimationCurve zCurve;
 
+    private float timeCount = 0f;
     private float xTrans = 0f;
     private float yTrans = 0f;
     private float zTrans = 0f;
@@ -33,6 +34,7 @@ public class TerrainOscillator : MonoBehaviour
 
     private void Start()
     {
+        timeCount = 0f;
         if (waitTime > 0)
         {
             waiting = true;
@@ -45,11 +47,26 @@ public class TerrainOscillator : MonoBehaviour
     {
         if(!waiting && playerContact)
         {
+            /*
             xTrans = (initialPosition.x + Mathf.Sin((Time.time * xSpeed)) * xAmp) - transform.position.x;
             yTrans = (initialPosition.y + Mathf.Sin((Time.time * ySpeed)) * yAmp) - transform.position.y;
             zTrans = (initialPosition.z + Mathf.Sin((Time.time * zSpeed)) * zAmp) - transform.position.z;
+            */
 
+            //transform.Translate(xTrans, yTrans, zTrans);
+        }
+    }
+
+
+    private void FixedUpdate()
+    {
+        if (!waiting && playerContact)
+        {
+            xTrans = (Mathf.Sin((timeCount + Time.fixedDeltaTime) * xSpeed) - Mathf.Sin((timeCount) * xSpeed)) * xAmp;
+            yTrans = (Mathf.Sin((timeCount + Time.fixedDeltaTime) * ySpeed) - Mathf.Sin((timeCount) * ySpeed)) * yAmp;
+            zTrans = (Mathf.Sin((timeCount + Time.fixedDeltaTime) * zSpeed) - Mathf.Sin((timeCount) * zSpeed)) * zAmp;
             transform.Translate(xTrans, yTrans, zTrans);
+            timeCount += Time.fixedDeltaTime;
         }
     }
 

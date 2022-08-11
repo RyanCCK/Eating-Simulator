@@ -14,17 +14,12 @@ public class OscRotator : MonoBehaviour
     [SerializeField] public float waitTime = 0f;
 
     private Vector3 center;
-    private float xRotThisFrame;
-    private float yRotThisFrame;
-    private float zRotThisFrame;
-    private float currentXRot = 0f;
-    private float currentYRot = 0f;
-    private float currentZRot = 0f;
-    private float xDir = 1f;
-    private float yDir = 1f;
-    private float zDir = 1f;
-    private bool playerContact = true;
+    private float timeCount = 0f;
+    private float xRot = 0f;
+    private float yRot = 0f;
+    private float zRot = 0f;
     private bool waiting = false;
+    private bool playerContact = true;
     
 
 
@@ -45,6 +40,7 @@ public class OscRotator : MonoBehaviour
 
     private void Start()
     {
+        timeCount = 0f;
         if (waitTime > 0)
         {
             waiting = true;
@@ -57,36 +53,21 @@ public class OscRotator : MonoBehaviour
     {
         if (!waiting && playerContact)
         {
-            if (currentXRot > xRotation / 2.0)
-                xDir = -1;
-            else if (currentXRot < -1 * (xRotation / 2.0))
-                xDir = 1;
-            if (currentYRot > yRotation / 2.0)
-                yDir = -1;
-            else if (currentYRot < -1 * (yRotation / 2.0))
-                yDir = 1;
-            if (currentZRot > zRotation / 2.0)
-                zDir = -1;
-            else if (currentZRot < -1 * (zRotation / 2.0))
-                zDir = 1;
-
-            xRotThisFrame = ((xRotation / (1/xSpeed)) * Time.deltaTime) * xDir;
-            yRotThisFrame = ((yRotation / (1/ySpeed)) * Time.deltaTime) * yDir;
-            zRotThisFrame = ((zRotation / (1/zSpeed)) * Time.deltaTime) * zDir;
-
-            currentXRot += xRotThisFrame;
-            currentYRot += yRotThisFrame;
-            currentZRot += zRotThisFrame;
+            xRot = (Mathf.Sin((timeCount + Time.fixedDeltaTime) * xSpeed) - Mathf.Sin((timeCount) * xSpeed)) * xRotation;
+            yRot = (Mathf.Sin((timeCount + Time.fixedDeltaTime) * ySpeed) - Mathf.Sin((timeCount) * ySpeed)) * yRotation;
+            zRot = (Mathf.Sin((timeCount + Time.fixedDeltaTime) * zSpeed) - Mathf.Sin((timeCount) * zSpeed)) * zRotation;
 
             //x rotation
-            if(xRotation != 0)
-                gameObject.transform.RotateAround(center, Vector3.right, xRotThisFrame);
+            if (xRotation != 0)
+                gameObject.transform.RotateAround(center, Vector3.right, xRot);
             //y rotation
-            if(yRotation != 0)
-                gameObject.transform.RotateAround(center, Vector3.up, yRotThisFrame);
+            if (yRotation != 0)
+                gameObject.transform.RotateAround(center, Vector3.up, yRot);
             //z rotation
-            if(zRotation != 0)
-                gameObject.transform.RotateAround(center, Vector3.forward, zRotThisFrame);
+            if (zRotation != 0)
+                gameObject.transform.RotateAround(center, Vector3.forward, zRot);
+
+            timeCount += Time.fixedDeltaTime;
         }
     }
 

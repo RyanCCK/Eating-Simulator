@@ -90,15 +90,6 @@ public class PlayerController : MonoBehaviour
                 verticalInputAxis = Input.GetAxis("Vertical");
                 jumpInputAxis = Input.GetAxis("Jump");
 
-                // Rotate player if necessary
-                /*
-                if (targetRotation != transform.rotation)
-                {
-                    transform.rotation = Quaternion.Slerp(initialRotation, targetRotation, rotationTimeCount * rotationSpeed * 0.1f);
-                    rotationTimeCount += Time.deltaTime;
-                }
-                */
-
                 // If there is a power-up waiting in nextState, use it
                 if (nextState == State.PowerUp1 || nextState == State.PowerUp2)
                     ChangeState(nextState);
@@ -252,11 +243,15 @@ public class PlayerController : MonoBehaviour
         speedBoostForceApplicationTimer = speedBoost.GetComponent<SpeedBoost>().forceDuration;
         // Set maxSpeed
         speedBoostMaxSpeed = speedBoost.GetComponent<SpeedBoost>().maxSpeed;
-        // Calculate force vector to be applied throughout speedBoostForceApplicationTimer duration
-        speedBoostForceVector = Vector3.Normalize((speedBoost.GetComponent<SpeedBoost>().forceDirection.normalized 
+        // Calculate force direction vector
+        speedBoostForceVector = Vector3.Normalize((speedBoost.GetComponent<SpeedBoost>().forceDirection.normalized
                                                  * speedBoost.GetComponent<SpeedBoost>().forceDirectionPower)
-                                                 + rb.velocity.normalized)
-                              * speedBoost.GetComponent<SpeedBoost>().continuouslyAppliedForce;
+                                                 + rb.velocity.normalized);
+        // If there is a continuously applied force, multiply it by force direction vector to get correct magnitude.
+        if (speedBoost.GetComponent<SpeedBoost>().continuouslyAppliedForce != 0)
+        {
+            speedBoostForceVector *= speedBoost.GetComponent<SpeedBoost>().continuouslyAppliedForce;
+        }
         // Enforce axis restrictions on application of force
         if (speedBoost.GetComponent<SpeedBoost>().restrictPosX)
         {

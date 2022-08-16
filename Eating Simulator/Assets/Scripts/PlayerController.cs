@@ -153,6 +153,14 @@ public class PlayerController : MonoBehaviour
         {
             // Set nextState to the correct PowerUp state
         }
+
+        if (other.gameObject.tag == "Player Rotation Zone")
+        {
+            rotationTimeCount = 0;
+            initialRotation = transform.rotation;
+            targetRotation = other.GetComponent<PlayerRotationZone>().rotation;
+            rotationSpeed = other.GetComponent<PlayerRotationZone>().rotationSpeed;
+        }
     }
 
 
@@ -163,13 +171,6 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Moving Platform")
             transform.parent = other.gameObject.transform;
-
-        if (other.gameObject.tag == "Player Rotation Zone")
-        {
-            initialRotation = transform.rotation;
-            targetRotation = other.GetComponent<PlayerRotationZone>().rotation;
-            rotationSpeed = other.GetComponent<PlayerRotationZone>().rotationSpeed;
-        }
     }
 
 
@@ -183,7 +184,7 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Player Rotation Zone")
         {
-            initialRotation = transform.rotation;
+            //TODO: Remove This
         }
     }
 

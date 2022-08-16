@@ -49,7 +49,7 @@ public class OscRotator : MonoBehaviour
     }
 
     
-    void Update()
+    void FixedUpdate()
     {
         if (!waiting && playerContact)
         {

@@ -12,6 +12,8 @@ public class TerrainRotator : MonoBehaviour
     [SerializeField] public float zSpeed = 0f;
     [SerializeField] public bool waitForPlayerContact = false;
     [SerializeField] public float waitTime = 0f;
+    [SerializeField] public bool useCustomCenter = false;
+    [SerializeField] public Vector3 customCenter;
 
     private Vector3 center;
     private bool waiting = false;
@@ -20,13 +22,18 @@ public class TerrainRotator : MonoBehaviour
 
     private void Awake()
     {
-        // Calculate actual center of gameobject from average position of all children
-        Component[] childTransforms = GetComponentsInChildren<Transform>();
-        foreach(Transform child in childTransforms)
+        // If no custom center is being used,
+        // calculate actual center of gameobject from average position of all children
+        if (!useCustomCenter)
         {
-            center += child.position;
+            Component[] childTransforms = GetComponentsInChildren<Transform>();
+            foreach (Transform child in childTransforms)
+            {
+                center += child.position;
+            }
+            center /= childTransforms.Length;
         }
-        center /= childTransforms.Length;
+        else center = customCenter;
 
         // Wait for player contact if necessary
         if (waitForPlayerContact) playerContact = false;
@@ -43,16 +50,16 @@ public class TerrainRotator : MonoBehaviour
     }
 
     
-    void Update()
+    void FixedUpdate()
     {
         if (!waiting && playerContact)
         {
             //x rotation
-            gameObject.transform.RotateAround(center, xAxis, xSpeed * Time.deltaTime);
+            gameObject.transform.RotateAround(center, xAxis, xSpeed * Time.fixedDeltaTime);
             //y rotation
-            gameObject.transform.RotateAround(center, yAxis, ySpeed * Time.deltaTime);
+            gameObject.transform.RotateAround(center, yAxis, ySpeed * Time.fixedDeltaTime);
             //z rotation
-            gameObject.transform.RotateAround(center, zAxis, zSpeed * Time.deltaTime);
+            gameObject.transform.RotateAround(center, zAxis, zSpeed * Time.fixedDeltaTime);
         }
     }
 

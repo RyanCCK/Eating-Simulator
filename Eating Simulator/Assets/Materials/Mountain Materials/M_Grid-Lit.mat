@@ -51,10 +51,10 @@ Material:
     m_Floats:
     - BOOLEAN_WORLDSPACEUV: 1
     - _GridRotation: 45
-    - _Metallic: 0
-    - _Smoothness: 1
+    - _Metallic: 0.146
+    - _Smoothness: 0.676
     m_Colors:
-    - _GridColor: {r: 2.572549, g: 4.329412, b: 12.42353, a: 1}
+    - _GridColor: {r: 0.03252233, g: 0.7151506, b: 6.8296885, a: 1}
     - _GridSpeed: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0, g: 0, b: 0, a: 1}
     - _Tiling: {r: 0.05, g: 0.05, b: 0, a: 0}

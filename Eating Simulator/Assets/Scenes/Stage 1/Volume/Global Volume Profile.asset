@@ -15,16 +15,16 @@ MonoBehaviour:
   active: 1
   m_AdvancedMode: 0
   postExposure:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1.5
   contrast:
     m_OverrideState: 1
-    m_Value: 5
+    m_Value: -10
     min: -100
     max: 100
   colorFilter:
     m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_Value: {r: 1.3254786, g: 0.044367485, b: 0.044367485, a: 1}
     hdr: 1
     showAlpha: 0
     showEyeDropper: 1
@@ -35,7 +35,7 @@ MonoBehaviour:
     max: 180
   saturation:
     m_OverrideState: 1
-    m_Value: -50
+    m_Value: 10
     min: -100
     max: 100
 --- !u!114 &-6349131208585820337
@@ -53,11 +53,11 @@ MonoBehaviour:
   active: 1
   m_AdvancedMode: 0
   lift:
-    m_OverrideState: 1
-    m_Value: {x: 1, y: 0.92240435, z: 0.38421512, w: 0.0017513535}
+    m_OverrideState: 0
+    m_Value: {x: 0.81175137, y: 1, z: 0, w: 0.000000081091684}
   gamma:
     m_OverrideState: 0
-    m_Value: {x: 1, y: 0.64918655, z: 0, w: -1}
+    m_Value: {x: 0.90465546, y: 0, z: 1, w: 0.08898301}
   gain:
     m_OverrideState: 1
     m_Value: {x: 0.2685361, y: 0, z: 1, w: -0.0017514202}
@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb4b772797da9440885e8bd939e9560, type: 3}
   m_Name: ColorCurves
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   master:
     m_OverrideState: 0
@@ -308,7 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfbdbb87d3286943a057f7791b43141, type: 3}
   m_Name: ChannelMixer
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   redOutRedIn:
     m_OverrideState: 0
@@ -399,7 +399,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: 8917298419256243268}
-  - {fileID: 127655083162427576}
   - {fileID: -2677824073494013747}
   - {fileID: -8625836103441886755}
   - {fileID: 90161875261395115}
@@ -419,17 +418,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558a8e2b6826cf840aae193990ba9f2e, type: 3}
   m_Name: ShadowsMidtonesHighlights
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   shadows:
-    m_OverrideState: 1
-    m_Value: {x: 0.97912943, y: 0.9390578, z: 1, w: -1}
+    m_OverrideState: 0
+    m_Value: {x: 0.9875326, y: 0.9469272, z: 1, w: -0.08898299}
   midtones:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: {x: 1, y: 0.95945954, z: 0.9872884, w: 1}
   highlights:
     m_OverrideState: 0
-    m_Value: {x: 1, y: 0.56717145, z: 0, w: 0.9807354}
+    m_Value: {x: 0, y: 1, z: 0.5974405, w: 1}
   shadowsStart:
     m_OverrideState: 0
     m_Value: 0
@@ -446,25 +445,6 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
     min: 0
---- !u!114 &127655083162427576
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81180773991d8724ab7f2d216912b564, type: 3}
-  m_Name: ChromaticAberration
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  intensity:
-    m_OverrideState: 1
-    m_Value: 0.1
-    min: 0
-    max: 1
 --- !u!114 &3519937179199222694
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -477,7 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
   m_Name: SplitToning
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   shadows:
     m_OverrideState: 0
@@ -516,7 +496,7 @@ MonoBehaviour:
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 1
     min: 0
   scatter:
     m_OverrideState: 0
@@ -529,7 +509,7 @@ MonoBehaviour:
     min: 0
   tint:
     m_OverrideState: 0
-    m_Value: {r: 0.24564005, g: 0, b: 0.5283019, a: 1}
+    m_Value: {r: 0, g: 0.13985316, b: 0.5294118, a: 1}
     hdr: 0
     showAlpha: 0
     showEyeDropper: 1
@@ -543,7 +523,7 @@ MonoBehaviour:
     max: 16
   dirtTexture:
     m_OverrideState: 0
-    m_Value: {fileID: 0}
+    m_Value: {fileID: 2800000, guid: ce490a36aea030f45ba13d226cf1ecea, type: 3}
   dirtIntensity:
     m_OverrideState: 0
     m_Value: 0

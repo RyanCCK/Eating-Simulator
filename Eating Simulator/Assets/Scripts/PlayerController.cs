@@ -10,17 +10,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float maxSpeed = 60f;
     [SerializeField] public float jumpForce = 20f;
     [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
+    public float rocketBoostDuration = 3f;
+    public float rocketBoostSpeed = 100f;
     public bool canReceiveKnockback = true;
+    [Tooltip("Index 0 holds Rocket Boost mat., ...")]
+    [SerializeField] public Material[] powerUpMaterials;
 
     public enum State
     {
         Default, 
         Dead,
         Advancing,
-        PowerUp1,
-        PowerUp2,
-        UsingPowerUp1,
-        UsingPowerUp2
+        RocketBoostEquipped,
+        UsingRocketBoost
     };  
 
     private State currentState;
@@ -28,6 +30,8 @@ public class PlayerController : MonoBehaviour
 
     private GameManager gameManager;
     private Rigidbody rb;
+    private MeshRenderer meshRenderer;
+    private Material defaultMaterial;
     private Quaternion initialRotation;
     private Quaternion targetRotation = Quaternion.identity;
     private float rotationSpeed;
@@ -45,14 +49,23 @@ public class PlayerController : MonoBehaviour
     private float speedBoostForceApplicationTimer = 0f;
     private float speedBoostTotalTimer = 0f;
 
+    public delegate void RocketBoostAction();
+    public delegate void DefaultStateAction();
+
+    public static event RocketBoostAction OnRocketBoostPowerUp;
+    public static event DefaultStateAction OnDefaultState;
+
 
 
 
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
         currentState = State.Default;
+        nextState = State.Default;
+        rb = GetComponent<Rigidbody>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        defaultMaterial = meshRenderer.material;
     }
 
 
@@ -81,21 +94,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        switch (currentState)
+        // Read player input
+        horizontalInputAxis = Input.GetAxis("Horizontal");
+        verticalInputAxis = Input.GetAxis("Vertical");
+        jumpInputAxis = Input.GetAxis("Jump");
+
+        // Check if power up is toggled/used
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
         {
-            case State.Default:
-            {
-                // Read player input
-                horizontalInputAxis = Input.GetAxis("Horizontal");
-                verticalInputAxis = Input.GetAxis("Vertical");
-                jumpInputAxis = Input.GetAxis("Jump");
-
-                // If there is a power-up waiting in nextState, use it
-                if (nextState == State.PowerUp1 || nextState == State.PowerUp2)
-                    ChangeState(nextState);
-
-                break;
-            }
+            ChangeState();
         }
     }
 
@@ -105,6 +112,7 @@ public class PlayerController : MonoBehaviour
         switch (currentState)
         {
             case State.Default:
+            case State.RocketBoostEquipped:
             {
                 // Rotate player if necessary
                 if (targetRotation != transform.rotation)
@@ -132,6 +140,14 @@ public class PlayerController : MonoBehaviour
 
                 break;
             }
+
+            case State.UsingRocketBoost:
+            {
+                // Handle player movement
+                RocketBoostMovement();
+
+                break;
+            }
         }
     }
 
@@ -151,7 +167,10 @@ public class PlayerController : MonoBehaviour
         }
         if (other.gameObject.tag == "Power Up")
         {
-            // Set nextState to the correct PowerUp state
+            if (other.GetComponent<PowerUp>().powerUpType == PowerUp.PowerUpType.RocketBoost)
+            {
+                ChangeState(State.RocketBoostEquipped);
+            }
         }
 
         if (other.gameObject.tag == "Player Rotation Zone")
@@ -181,11 +200,6 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Moving Platform")
             transform.parent = null;
-
-        if (other.gameObject.tag == "Player Rotation Zone")
-        {
-            //TODO: Remove This
-        }
     }
 
 
@@ -324,6 +338,18 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    // TODO: Fine-Tune and make this movement good!
+    // Applies movement during rocket boost power-up 
+    private void RocketBoostMovement()
+    {
+        Vector3 directionVector;
+        directionVector.x = horizontalInputAxis * 0.25f;
+        directionVector.y = jumpInputAxis * 0.25f;
+        directionVector.z = 1;
+        rb.velocity = directionVector * rocketBoostSpeed;
+    }
+
+
 
 
 
@@ -342,6 +368,21 @@ public class PlayerController : MonoBehaviour
         ChangeState(State.Advancing);
         StopAllCoroutines();
         rb.constraints = RigidbodyConstraints.FreezeAll;
+    }
+
+
+
+
+
+    // TODO:
+    // Do not switch states if the rocket boost has already been ended prematurely by the player.
+    // Accomplish this by checking if the current state is still UsingRocketBoost
+    // (Note that if another rocket boost is equipped and used within (duration) seconds 
+    //      after the first one is activated, then the second one will be ended by this routine with this implementation)
+    private IEnumerator RocketBoostRoutine()
+    {
+        yield return new WaitForSeconds(rocketBoostDuration);
+        ChangeState();
     }
 
 
@@ -371,69 +412,61 @@ public class PlayerController : MonoBehaviour
      * 
      */
 
-    private void ChangeState(State nextState = State.Default)
+    // TODO:
+    // Build in brief delay to prevent switching between states too quickly 
+    private void ChangeState(State newState = State.Default)
     {
         switch (currentState)
         {
             case State.Default:
             {
-                switch (nextState)
+                switch (newState)
                 {
-                    case State.Default:
-                    {
-                        break;
-                    }
-
                     case State.Dead:
                     {
                         currentState = State.Dead;
-                        nextState = State.Default;
                         break;
                     }
 
                     case State.Advancing:
                     {
                         currentState = State.Advancing;
-                        nextState = State.Default;
                         break;
                     }
 
-                    default:
-                        Debug.LogError("Invalid next state");
+                    case State.RocketBoostEquipped:
+                    {
+                        currentState = State.RocketBoostEquipped;
+                        meshRenderer.material = powerUpMaterials[0];
+                        //play pick-up particle effect
                         break;
+                    }
                 }
                 break;
             }
 
-            case State.Dead:
+            case State.RocketBoostEquipped:
             {
-                switch (nextState)
-                {
-                    case State.Dead:
-                    {
-                        break;
-                    }
+                // TODO:
+                // SWITCH to account for dead or advancing
 
-                    default:
-                        Debug.LogError("Invalid next state");
-                        break;
-                }
+                currentState = State.UsingRocketBoost;
+                OnRocketBoostPowerUp(); //Event
+                //Play rocket boost particles
+                StartCoroutine(RocketBoostRoutine());
                 break;
             }
 
-            case State.Advancing:
+            case State.UsingRocketBoost:
             {
-                switch (nextState)
-                {
-                    case State.Advancing:
-                    {
-                        break;
-                    }
+                // TODO:
+                // SWITCH to account for dead or advancing,
+                // or if another power up is being equipped.
 
-                    default:
-                        Debug.LogError("Invalid next state");
-                        break;
-                }
+                currentState = State.Default;
+                OnDefaultState();   //Event
+                meshRenderer.material = defaultMaterial;
+                //Stop rocket boost particles
                 break;
             }
         }

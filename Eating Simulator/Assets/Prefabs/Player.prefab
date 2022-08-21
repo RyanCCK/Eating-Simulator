@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 3629387403706264343}
   - component: {fileID: 5477525559706036721}
   - component: {fileID: 5411283269819092201}
-  - component: {fileID: 3452489197364570153}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -114,6 +113,10 @@ MonoBehaviour:
   maxSpeed: 50
   jumpForce: 20
   midAirDampingCoeff: 0.5
+  rocketBoostDuration: 3
+  rocketBoostVelocity: 100
+  canReceiveKnockback: 1
+  powerUpMaterials: []
 --- !u!54 &5411283269819092201
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -130,16 +133,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!135 &3452489197364570153
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8553855879707396865}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.6
-  m_Center: {x: 0, y: 0, z: 0}

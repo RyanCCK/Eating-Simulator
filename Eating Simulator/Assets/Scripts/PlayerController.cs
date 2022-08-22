@@ -13,8 +13,10 @@ public class PlayerController : MonoBehaviour
     public float rocketBoostDuration = 3f;
     public float rocketBoostSpeed = 100f;
     public bool canReceiveKnockback = true;
-    [Tooltip("Index 0 holds Rocket Boost mat., ...")]
+    [Tooltip("Index 0 is for Rocket Boost, 1 for Constructor, 2 for Detonator, 3 for Bouncy Ball, 4 for Seagull Morph")]
     [SerializeField] public Material[] powerUpMaterials;
+    [Tooltip("Index 0 is for Rocket Boost, 1 for Constructor, 2 for Detonator, 3 for Bouncy Ball")]
+    [SerializeField] public GameObject[] powerUpParticles;
 
     public enum State
     {
@@ -22,7 +24,15 @@ public class PlayerController : MonoBehaviour
         Dead,
         Advancing,
         RocketBoostEquipped,
-        UsingRocketBoost
+        UsingRocketBoost,
+        ConstructorEquipped, 
+        UsingConstructor,
+        DetonatorEquipped,
+        UsingDetonator,
+        BouncyBallEquipped,
+        UsingBouncyBall,
+        SeagullMorphEquipped,
+        UsingSeagullMorph
     };  
 
     private State currentState;
@@ -32,6 +42,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private MeshRenderer meshRenderer;
     private Material defaultMaterial;
+    // May need to change this to an array of effects, 
+    //  if multiple effects need to be destroyed on a state change.
+    private GameObject currentPowerUpParticles;
     private Quaternion initialRotation;
     private Quaternion targetRotation = Quaternion.identity;
     private float rotationSpeed;
@@ -40,9 +53,11 @@ public class PlayerController : MonoBehaviour
     private float horizontalInputAxis;
     private float verticalInputAxis;
     private float jumpInputAxis;
-    private bool jumpAvailable;
+    private bool jumpAvailable = true;
     private bool isJumping = false;
     private float jumpAvailabilityDelay = 0.25f;
+    private bool stateChangeAvailable = true;
+    private float stateChangeDelay = 0.1f;
     private bool isSpeedBoostApplied = false;
     private Vector3 speedBoostForceVector;
     private float speedBoostMaxSpeed;
@@ -100,9 +115,16 @@ public class PlayerController : MonoBehaviour
         jumpInputAxis = Input.GetAxis("Jump");
 
         // Check if power up is toggled/used
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) && stateChangeAvailable)
         {
             ChangeState();
+        }
+
+        // Check if a stored power up needs to be applied (do not wait for stateChangeAvailable)
+        if (currentState == State.Default && nextState != State.Default)
+        {
+            ChangeState(nextState);
+            nextState = State.Default;
         }
     }
 
@@ -113,6 +135,11 @@ public class PlayerController : MonoBehaviour
         {
             case State.Default:
             case State.RocketBoostEquipped:
+            case State.ConstructorEquipped:
+            case State.DetonatorEquipped:
+            case State.BouncyBallEquipped:
+            case State.SeagullMorphEquipped:
+            case State.UsingConstructor:
             {
                 // Rotate player if necessary
                 if (targetRotation != transform.rotation)
@@ -143,9 +170,29 @@ public class PlayerController : MonoBehaviour
 
             case State.UsingRocketBoost:
             {
-                // Handle player movement
+                // Handle powered-up rocket boost player movement
                 RocketBoostMovement();
+                break;
+            }
 
+            case State.UsingDetonator:
+            {
+                // Freeze player movement temporarily, while shaking player around as if "charging up"
+                break;
+            }
+
+            case State.UsingBouncyBall:
+            {
+                // Enable double-jump, cause player to bounce against surfaces,
+                //      apply custom increased gravity, increase jump power
+                break;
+            }
+
+            case State.UsingSeagullMorph:
+            {
+                // Enable free movement and rotation, decrease movement speed while in contact with any surface,
+                //      enable unlimited upward flight, enable slow fall, disable player-received knockback,
+                //      do not respond to player roation zones
                 break;
             }
         }
@@ -161,15 +208,21 @@ public class PlayerController : MonoBehaviour
         {
             if (!isJumping) jumpAvailable = true;
         }
+
         if (other.gameObject.tag == "Speed Boost")
         {
             ApplySpeedBoost(other.gameObject);
         }
+
         if (other.gameObject.tag == "Power Up")
         {
-            if (other.GetComponent<PowerUp>().powerUpType == PowerUp.PowerUpType.RocketBoost)
+            if (currentState != State.Default)
             {
-                ChangeState(State.RocketBoostEquipped);
+                nextState = other.GetComponent<PowerUp>().induceState;
+            }
+            else
+            {
+                ChangeState(other.GetComponent<PowerUp>().induceState);
             }
         }
 
@@ -337,14 +390,14 @@ public class PlayerController : MonoBehaviour
         rb.velocity = adjustedVelocity;
     }
 
-
-    // TODO: Fine-Tune and make this movement good!
-    // Applies movement during rocket boost power-up 
+    
+    // Applies player movement during rocket boost power-up 
     private void RocketBoostMovement()
     {
         Vector3 directionVector;
         directionVector.x = horizontalInputAxis * 0.25f;
         directionVector.y = jumpInputAxis * 0.25f;
+        if (verticalInputAxis != 0) directionVector.y = verticalInputAxis * 0.25f;
         directionVector.z = 1;
         rb.velocity = directionVector * rocketBoostSpeed;
     }
@@ -353,42 +406,31 @@ public class PlayerController : MonoBehaviour
 
 
 
-    // Handles what happens to the player on death
-    private void OnDeath()
-    {
-        ChangeState(State.Dead);
-        StopAllCoroutines();
-        rb.constraints = RigidbodyConstraints.FreezeAll;
-    }
-
-
-    // Handles what happens to the player on level advancement
-    private void OnLevelAdvance()
-    {
-        ChangeState(State.Advancing);
-        StopAllCoroutines();
-        rb.constraints = RigidbodyConstraints.FreezeAll;
-    }
-
-
-
-
-
-    // TODO:
-    // Do not switch states if the rocket boost has already been ended prematurely by the player.
-    // Accomplish this by checking if the current state is still UsingRocketBoost
+    // Timer to end the rocket boost power-up
     // (Note that if another rocket boost is equipped and used within (duration) seconds 
-    //      after the first one is activated, then the second one will be ended by this routine with this implementation)
-    private IEnumerator RocketBoostRoutine()
+    // after the first one is activated, then the second one will be ended by this routine with this implementation)
+    // POSSIBLE FIX: every time a rocket boost is activated, first stop all instances of RocketBoostRoutine, then start a new one
+    // NEED TO TEXT FIX ABOVE (IS IMPLEMENTED)
+    private IEnumerator RocketBoostTimer()
     {
         yield return new WaitForSeconds(rocketBoostDuration);
-        ChangeState();
+        if (currentState == State.UsingRocketBoost)
+            ChangeState();
     }
 
 
 
 
 
+    // Enforces brief delay between state changes, so that the player cannot accidentally skip past a desired state.
+    private IEnumerator IsChangingState()
+    {
+        stateChangeAvailable = false;
+        yield return new WaitForSeconds(stateChangeDelay);
+        stateChangeAvailable = true;
+    }
+    
+    
     // Returns the player's current state.
     public State GetState()
     {
@@ -416,29 +458,58 @@ public class PlayerController : MonoBehaviour
     // Build in brief delay to prevent switching between states too quickly 
     private void ChangeState(State newState = State.Default)
     {
+        StartCoroutine(IsChangingState());
+
+        if (newState == State.Dead)
+        {
+            currentState = State.Dead;
+            return;
+        }
+        else if (newState == State.Advancing)
+        {
+            currentState = State.Advancing;
+            return;
+        }
+
         switch (currentState)
         {
             case State.Default:
             {
                 switch (newState)
                 {
-                    case State.Dead:
-                    {
-                        currentState = State.Dead;
-                        break;
-                    }
-
-                    case State.Advancing:
-                    {
-                        currentState = State.Advancing;
-                        break;
-                    }
-
                     case State.RocketBoostEquipped:
                     {
                         currentState = State.RocketBoostEquipped;
                         meshRenderer.material = powerUpMaterials[0];
-                        //play pick-up particle effect
+                        break;
+                    }
+
+                    case State.ConstructorEquipped:
+                    {
+                        currentState = State.ConstructorEquipped;
+                        meshRenderer.material = powerUpMaterials[1];
+                        break;
+                    }
+
+                    case State.DetonatorEquipped:
+                    {
+                        currentState = State.DetonatorEquipped;
+                        meshRenderer.material = powerUpMaterials[2];
+                        break;
+                    }
+
+                    case State.BouncyBallEquipped:
+                    {
+                        currentState = State.BouncyBallEquipped;
+                        meshRenderer.material = powerUpMaterials[3];
+                        break;
+                    }
+
+                    case State.SeagullMorphEquipped:
+                    {
+                        currentState = State.SeagullMorphEquipped;
+                        // Also add wings to player 
+                        meshRenderer.material = powerUpMaterials[4];
                         break;
                     }
                 }
@@ -447,28 +518,105 @@ public class PlayerController : MonoBehaviour
 
             case State.RocketBoostEquipped:
             {
-                // TODO:
-                // SWITCH to account for dead or advancing
-
                 currentState = State.UsingRocketBoost;
                 OnRocketBoostPowerUp(); //Event
-                //Play rocket boost particles
-                StartCoroutine(RocketBoostRoutine());
+                currentPowerUpParticles = Instantiate(powerUpParticles[0], transform);
+                StopCoroutine(RocketBoostTimer());
+                StartCoroutine(RocketBoostTimer());
                 break;
             }
 
             case State.UsingRocketBoost:
             {
-                // TODO:
-                // SWITCH to account for dead or advancing,
-                // or if another power up is being equipped.
-
                 currentState = State.Default;
                 OnDefaultState();   //Event
                 meshRenderer.material = defaultMaterial;
-                //Stop rocket boost particles
+                jumpAvailable = true;
+                Destroy(currentPowerUpParticles);
+                break;
+            }
+
+            case State.ConstructorEquipped:
+            {
+                currentState = State.UsingConstructor;
+                break;
+            }
+
+            case State.UsingConstructor:
+            {
+                currentState = State.Default;
+                OnDefaultState();   //Event
+                meshRenderer.material = defaultMaterial;
+                jumpAvailable = true;
+                break;
+            }
+
+            case State.DetonatorEquipped:
+            {
+                currentState = State.UsingDetonator;
+                break;
+            }
+
+            case State.UsingDetonator:
+            {
+                currentState = State.Default;
+                OnDefaultState();   //Event
+                meshRenderer.material = defaultMaterial;
+                jumpAvailable = true;
+                break;
+            }
+
+            case State.BouncyBallEquipped:
+            {
+                currentState = State.UsingBouncyBall;
+                break;
+            }
+
+            case State.UsingBouncyBall:
+            {
+                currentState = State.Default;
+                OnDefaultState();   //Event
+                meshRenderer.material = defaultMaterial;
+                jumpAvailable = true;
+                break;
+            }
+
+            case State.SeagullMorphEquipped:
+            {
+                currentState = State.UsingSeagullMorph;
+                break;
+            }
+
+            case State.UsingSeagullMorph:
+            {
+                currentState = State.Default;
+                OnDefaultState();   //Event
+                meshRenderer.material = defaultMaterial;
+                jumpAvailable = true;
                 break;
             }
         }
     }
+
+
+
+
+
+    // Handles what happens to the player on death
+    private void OnDeath()
+    {
+        ChangeState(State.Dead);
+        StopAllCoroutines();
+        rb.constraints = RigidbodyConstraints.FreezeAll;
+    }
+
+
+    // Handles what happens to the player on level advancement
+    private void OnLevelAdvance()
+    {
+        ChangeState(State.Advancing);
+        StopAllCoroutines();
+        rb.constraints = RigidbodyConstraints.FreezeAll;
+    }
 }
+

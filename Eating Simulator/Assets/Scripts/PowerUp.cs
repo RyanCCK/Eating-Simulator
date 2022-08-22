@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class PowerUp : MonoBehaviour
 {
-    public enum PowerUpType
-    {
-        RocketBoost,
-        Detonator,
-        BouncyBall,
-        Constructor,
-        SeagullMorph
-    }
-    [SerializeField] public PowerUpType powerUpType;
+    [SerializeField] public PlayerController.State induceState;
     [SerializeField] public GameObject pickUpEffect;
 
     private IEnumerator OnTriggerEnter(Collider other)
@@ -22,6 +14,10 @@ public class PowerUp : MonoBehaviour
             GetComponent<MeshRenderer>().enabled = false;
             GetComponent<SphereCollider>().enabled = false;
             GetComponent<ParticleSystem>().Stop();
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
             Instantiate(pickUpEffect, transform);
             yield return new WaitForSeconds(2f);
             Destroy(gameObject);

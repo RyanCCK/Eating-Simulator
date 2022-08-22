@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91dbd9ed82ccd59418f604702be0c88d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerUpType: 0
+  induceState: 3
   pickUpEffect: {fileID: 3855846029159682292, guid: db6b245aebd03d9458e81de1939aa4fb, type: 3}
 --- !u!198 &8920448653758597155
 ParticleSystem:

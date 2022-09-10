@@ -6,10 +6,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] public float moveForce = 50f;
-    [SerializeField] public float maxSpeed = 60f;
-    [SerializeField] public float jumpForce = 20f;
-    [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f;
+    [SerializeField] public float forwardMoveSpeed;
+    [SerializeField] public float lateralMoveSpeed;
+    [SerializeField] public float jumpSpeed;
+    [SerializeField] public float maxJumpDuration;
+    [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f; // May be irrelevant after changes to horizontal movement
     public float rocketBoostDuration = 3f;
     public float rocketBoostSpeed = 100f;
     public bool canReceiveKnockback = true;
@@ -53,9 +54,11 @@ public class PlayerController : MonoBehaviour
     private float horizontalInputAxis;
     private float verticalInputAxis;
     private float jumpInputAxis;
-    private bool jumpAvailable = true;
+    private Vector2 horizontalPlayerVelocity;
     private bool isJumping = false;
-    private float jumpAvailabilityDelay = 0.25f;
+    private float availableJumps = 1;
+    private float maxAvailableJumps = 1;
+    private float jumpTimer = 0f;
     private bool stateChangeAvailable = true;
     private float stateChangeDelay = 0.1f;
     private bool isSpeedBoostApplied = false;
@@ -152,12 +155,7 @@ public class PlayerController : MonoBehaviour
                 HorizontalMovement();
 
                 // Handle player jump
-                if (jumpInputAxis > 0 && jumpAvailable)
-                {
-                    Jump();
-                    jumpAvailable = false;
-                    StartCoroutine(IsJumping());
-                }
+                Jump();
 
                 // Handle speed boost
                 if (isSpeedBoostApplied)
@@ -185,6 +183,17 @@ public class PlayerController : MonoBehaviour
             {
                 // Enable double-jump, cause player to bounce against surfaces,
                 //      apply custom increased gravity, increase jump power
+
+                // Rotate player if necessary
+                if (targetRotation != transform.rotation)
+                {
+                    transform.rotation = Quaternion.Slerp(initialRotation, targetRotation, rotationTimeCount * rotationSpeed * 0.1f);
+                    rotationTimeCount += Time.fixedDeltaTime;
+                }
+
+                // Handle horizontal player movement
+                HorizontalMovement();
+
                 break;
             }
 
@@ -206,7 +215,8 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Ground")
         {
-            if (!isJumping) jumpAvailable = true;
+            isGrounded = true;
+            availableJumps = maxAvailableJumps;
         }
 
         if (other.gameObject.tag == "Speed Boost")
@@ -259,49 +269,56 @@ public class PlayerController : MonoBehaviour
 
 
 
-    // Applies the default horizontal player movement.
+    // Applies the default horizontal player movement. 
+    // Called on every FixedUpdate.
     private void HorizontalMovement()
     {
-        float xForce = horizontalInputAxis * moveForce;
-        float zForce = verticalInputAxis * moveForce;
+        horizontalPlayerVelocity.x = horizontalInputAxis * lateralMoveSpeed;
+        horizontalPlayerVelocity.y = verticalInputAxis * forwardMoveSpeed;
 
-        // Add damping to changes in direction made while mid-air
-        if (!isGrounded)
-        {
-            xForce *= midAirDampingCoeff;
-            zForce *= midAirDampingCoeff;
-        }
-
-        // Apply horizontal movement force
-        rb.AddRelativeForce(xForce, 0f, zForce, ForceMode.Force);
-
-        // Clamp horizontal speed to maxSpeed if no speed boost is being applied.
-        if (!isSpeedBoostApplied)
-        {
-            if (Mathf.Sqrt(Mathf.Pow(rb.velocity.x, 2f) + Mathf.Pow(rb.velocity.z, 2f)) > maxSpeed)
-                ConstrainHorizontalVelocity();
-        }
+        rb.velocity = new Vector3(horizontalPlayerVelocity.x, rb.velocity.y, horizontalPlayerVelocity.y);
     }
 
 
     // Applies the default player jump.
+    // Called on every FixedUpdate.
     private void Jump()
     {
-        if (rb.velocity.y < 0)
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(0f, jumpForce, 0f, ForceMode.Impulse);
-    }
+        // If the player is not already jumping, check whether to initiate a jump.
+        if (!isJumping)
+        {
+            // Only initiate a jump if the player is holding jump key, AND a jump is available
+            if (jumpInputAxis > 0 && availableJumps > 0)
+            {
+                isJumping = true;
+                jumpTimer = maxJumpDuration;
+                availableJumps--;
+                rb.velocity = new Vector3(rb.velocity.x, jumpSpeed, rb.velocity.z);
+            }
+        }
+        // If the player is already jumping, maintain the jump, or end if necessary
+        else
+        {
+            // Continue the jump as long as the player is holding jump key AND the max jump duration hasn't been reached
+            if (jumpInputAxis > 0 && jumpTimer > 0)
+            {
 
-
-    // Makes jump unavailable for jumpAvailabilityDelay seconds after jump is used.
-    private IEnumerator IsJumping()
-    {
-        isJumping = true;
-        yield return new WaitForSeconds(jumpAvailabilityDelay);
-        isJumping = false;
+                rb.velocity = new Vector3(rb.velocity.x, jumpSpeed, rb.velocity.z);
+                jumpTimer -= Time.fixedDeltaTime;
+            }
+            // End the jump when either jump key is released OR max jump duration has been reached
+            else
+            {
+                rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                isJumping = false;
+                jumpTimer = 0;
+            }
+        }
     }
     
     
+    //TODO: Update to work with changes to player movement
+    //
     // Calculates relevant values for application of speed boost, and applies initial impulse.
     private void ApplySpeedBoost(GameObject speedBoost)
     {
@@ -350,6 +367,8 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    //TODO: Update to work with changes to player movement
+    //
     // Applies continuous force to player based on most recent speed boost values. 
     // Also manages speed boost timers and ends speed boost.
     private void MaintainSpeedBoost()
@@ -376,20 +395,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-    // Clamps horizontal velocity to maxSpeed 
-    private void ConstrainHorizontalVelocity()
-    {
-        Vector3 adjustedVelocity = rb.velocity;
-        float yComp = rb.velocity.y;
-        adjustedVelocity.y = 0f;
-
-        adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, maxSpeed);
-        adjustedVelocity.y = yComp;
-
-        rb.velocity = adjustedVelocity;
-    }
-
     
     // Applies player movement during rocket boost power-up 
     private void RocketBoostMovement()
@@ -400,6 +405,13 @@ public class PlayerController : MonoBehaviour
         if (verticalInputAxis != 0) directionVector.y = verticalInputAxis * 0.25f;
         directionVector.z = 1;
         rb.velocity = directionVector * rocketBoostSpeed;
+    }
+
+
+    // Applies player movement during bouncy ball power-up
+    private void BouncyBallMovement()
+    {
+
     }
 
 
@@ -531,7 +543,7 @@ public class PlayerController : MonoBehaviour
                 currentState = State.Default;
                 OnDefaultState();   //Event
                 meshRenderer.material = defaultMaterial;
-                jumpAvailable = true;
+                availableJumps = maxAvailableJumps;
                 Destroy(currentPowerUpParticles);
                 break;
             }
@@ -547,7 +559,7 @@ public class PlayerController : MonoBehaviour
                 currentState = State.Default;
                 OnDefaultState();   //Event
                 meshRenderer.material = defaultMaterial;
-                jumpAvailable = true;
+                availableJumps = maxAvailableJumps;
                 break;
             }
 
@@ -562,7 +574,7 @@ public class PlayerController : MonoBehaviour
                 currentState = State.Default;
                 OnDefaultState();   //Event
                 meshRenderer.material = defaultMaterial;
-                jumpAvailable = true;
+                availableJumps = maxAvailableJumps;
                 break;
             }
 
@@ -577,7 +589,7 @@ public class PlayerController : MonoBehaviour
                 currentState = State.Default;
                 OnDefaultState();   //Event
                 meshRenderer.material = defaultMaterial;
-                jumpAvailable = true;
+                availableJumps = maxAvailableJumps;
                 break;
             }
 
@@ -592,7 +604,7 @@ public class PlayerController : MonoBehaviour
                 currentState = State.Default;
                 OnDefaultState();   //Event
                 meshRenderer.material = defaultMaterial;
-                jumpAvailable = true;
+                availableJumps = maxAvailableJumps;
                 break;
             }
         }

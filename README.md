@@ -1,5 +1,7 @@
 # Eating Simulator
  3D Unity Game
 
-The player must eat balls to grow large enough to eat the final entity in each level.
-Running over terrain causes it to decay and, after a short time, disappear completely.
+*"Eating Simulator" is a placeholder title and will not be used for the published game.*
+
+In this game, the player is a sphere that must traverse through a 3D platforming environment. 
+Powerups and enemies will be encountered along the way. 

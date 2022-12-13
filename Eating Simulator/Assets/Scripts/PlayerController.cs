@@ -6,11 +6,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] public float forwardMoveSpeed;
-    [SerializeField] public float lateralMoveSpeed;
+    [SerializeField] public Vector2 horizontalMovementForce;
+    [SerializeField] public float maxHorizontalVelocity;
     [SerializeField] public float jumpSpeed;
     [SerializeField] public float maxJumpDuration;
-    [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f; // May be irrelevant after changes to horizontal movement
+    [SerializeField, Range(0f, 1f)] public float midAirDampingCoeff = 0.3f; 
     public float rocketBoostDuration = 3f;
     public float rocketBoostSpeed = 100f;
     public bool canReceiveKnockback = true;
@@ -54,7 +54,6 @@ public class PlayerController : MonoBehaviour
     private float horizontalInputAxis;
     private float verticalInputAxis;
     private float jumpInputAxis;
-    private Vector2 horizontalPlayerVelocity;
     private bool isJumping = false;
     private float availableJumps = 1;
     private float maxAvailableJumps = 1;
@@ -217,6 +216,7 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
             availableJumps = maxAvailableJumps;
+            meshRenderer.material = powerUpMaterials[0]; //TEST LINE
         }
 
         if (other.gameObject.tag == "Speed Boost")
@@ -249,7 +249,10 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.tag == "Ground")
+        {
             isGrounded = true;
+            meshRenderer.material = powerUpMaterials[0]; //TEST LINE
+        }
 
         if (other.gameObject.tag == "Moving Platform")
             transform.parent = other.gameObject.transform;
@@ -259,7 +262,10 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.tag == "Ground")
+        {
             isGrounded = false;
+            meshRenderer.material = defaultMaterial; //TEST LINE
+        }
 
         if (other.gameObject.tag == "Moving Platform")
             transform.parent = null;
@@ -273,10 +279,23 @@ public class PlayerController : MonoBehaviour
     // Called on every FixedUpdate.
     private void HorizontalMovement()
     {
-        horizontalPlayerVelocity.x = horizontalInputAxis * lateralMoveSpeed;
-        horizontalPlayerVelocity.y = verticalInputAxis * forwardMoveSpeed;
+        float dampingCoeff = isGrounded ? 1 : midAirDampingCoeff;
+        float x = horizontalInputAxis * horizontalMovementForce.x * dampingCoeff;
+        float z = verticalInputAxis * horizontalMovementForce.y * dampingCoeff;
+        
+        rb.AddForce(x, 0f, 0f, ForceMode.Force);
+        rb.AddForce(0f, 0f, z, ForceMode.Force);
+        ConstrainHorizontalVelocity();
+    }
 
-        rb.velocity = new Vector3(horizontalPlayerVelocity.x, rb.velocity.y, horizontalPlayerVelocity.y);
+
+    // Ensures that the player's horizontal velocity is capped at some max value.
+    private void ConstrainHorizontalVelocity()
+    {
+        if (rb.velocity.magnitude > maxHorizontalVelocity)
+        {
+            rb.velocity = rb.velocity.normalized * maxHorizontalVelocity;
+        }
     }
 
 

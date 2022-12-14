@@ -517,6 +517,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Damping: 0
+--- !u!114 &108042580 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1877372801989715427, guid: 1c6c16d261f7af44f8f0f3f0d5097f5c, type: 3}
+  m_PrefabInstance: {fileID: 108042575}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108042576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &109654609
 GameObject:
   m_ObjectHideFlags: 0
@@ -2083,9 +2094,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cccd885edd2c1b40a223f354aa0beb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virtualCam: {fileID: 0}
-  deathCam: {fileID: 0}
-  rocketBoostCam: {fileID: 0}
+  virtualCam: {fileID: 108042580}
+  deathCam: {fileID: 445663061}
+  rocketBoostCam: {fileID: 308417437}
 --- !u!114 &235285976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4042,6 +4053,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &445663061 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8158028973555411614, guid: 9057f05fa5bf43b4f8473af691e52dc3, type: 3}
+  m_PrefabInstance: {fileID: 1251518217}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &445839405
 GameObject:
   m_ObjectHideFlags: 0
@@ -15953,7 +15975,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5477525559706036721, guid: a5ea829132d43e14381a95bf25296fe0, type: 3}
       propertyPath: maxHorizontalVelocity
-      value: 50
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5477525559706036721, guid: a5ea829132d43e14381a95bf25296fe0, type: 3}
       propertyPath: speedBoostMoveVelocity

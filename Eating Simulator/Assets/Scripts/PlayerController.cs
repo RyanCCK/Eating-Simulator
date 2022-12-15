@@ -238,10 +238,14 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Player Rotation Zone")
         {
-            rotationTimeCount = 0;
-            initialRotation = transform.rotation;
-            targetRotation = other.GetComponent<PlayerRotationZone>().rotation;
-            rotationSpeed = other.GetComponent<PlayerRotationZone>().rotationSpeed;
+            // Rotation zones should have no effect if rocket boost power-up is active
+            if (currentState != State.UsingRocketBoost)
+            {
+                rotationTimeCount = 0;
+                initialRotation = transform.rotation;
+                targetRotation = other.GetComponent<PlayerRotationZone>().rotation;
+                rotationSpeed = other.GetComponent<PlayerRotationZone>().rotationSpeed;
+            }
         }
     }
 

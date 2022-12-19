@@ -296,9 +296,21 @@ public class PlayerController : MonoBehaviour
     // Ensures that the player's horizontal velocity is capped at some max value.
     private void ConstrainHorizontalVelocity()
     {
-        if (rb.velocity.magnitude > maxHorizontalVelocity)
+        //If a speed boost is currently being applied, constrain max velocity to the velocity
+        // defined by the speed boost
+        if (isSpeedBoostApplied)
         {
-            rb.velocity = rb.velocity.normalized * maxHorizontalVelocity;
+            if (rb.velocity.magnitude > speedBoostMaxSpeed)
+            {
+                rb.velocity = rb.velocity.normalized * speedBoostMaxSpeed;
+            }
+        }
+        else
+        {
+            if (rb.velocity.magnitude > maxHorizontalVelocity)
+            {
+                rb.velocity = rb.velocity.normalized * maxHorizontalVelocity;
+            }
         }
     }
 
